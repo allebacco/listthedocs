@@ -1,0 +1,11 @@
+site_name: List The Docs
+repo_url: https://github.com/allebacco/listthedocs
+site_author: Alessandro Bacchini
+copyright: Alessandro Bacchini
+nav:
+    - Home: index.md
+    - Getting Started: getting_started.md
+    - REST APIs: rest_api.md
+    - Python Client: python_client.md
+    - About:
+      - License: about/license.md
