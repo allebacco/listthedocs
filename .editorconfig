@@ -1,0 +1,67 @@
+;
+; Camlin Italy S.r.l. - Part of the Camlin Group
+;
+;
+; Global Editor Config for code repositories
+;
+;
+; This is an ini style configuration.
+; See http://editorconfig.org/ for more information on this file.
+;
+;
+; Version 1.0.0
+; Last Update: 2016-04-11
+;
+
+
+; Top level editor config.
+root = true
+
+; NOTE:
+; please do not general rules to prevent accidental modification of binary files and the like which may be
+; opened by mistake from text editors
+; [*]
+
+; C/C++ Source Files
+[*.{c,cc,cpp,h,hh,hpp}]
+charset = utf-8
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[Makefile]
+indent_style = tab
+tab_width = 4
+
+; Python Source Files
+[*.py]
+charset = utf-8
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+max_line_length = 120
+trim_trailing_whitespace = true
+
+[*.rst]
+charset = utf-8
+indent_size = 3
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+; Latex Source Files
+[*.tex]
+charset = utf-8
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+; YAML Source Files
+[*.{yml,yaml}]
+charset = utf-8
+indent_size = 2
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true

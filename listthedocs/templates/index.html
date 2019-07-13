@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <script type="text/javascript">
+        function gotodocs(obj)
+        {
+         var selectedValue = obj.options[obj.selectedIndex].value;
+         window.location.href = selectedValue;
+        }
+    </script>
+
+    <div class="container">
+
+        <div class="jumbotron">
+            <p>{{ header|safe }}</p>
+            </p>
+        </div>
+
+        <!-- /.row -->
+
+        <div class="card-columns">
+
+            {% for project in projects %}
+
+                <div class="card">
+                    <div class="card-body p-2">
+                        <h4 class="card-title">{{ project.name }}</h4>
+                        {% if project.logo is not None %}
+                            <img class="rounded mx-auto d-block" src="{{ project.logo }}"  alt="">
+                        {% endif %}
+                        <p class="card-text mt-2"> {{ project.description|safe }} </p>
+                        {% if project.versions|length > 0 %}
+                            <p class="d-flex justify-content-center">
+                                <a href="{{ project.versions|last|attr('url') }}"
+                                        class="btn btn-primary"
+                                        role="button">
+                                    <strong>Latest</strong>
+                                </a>
+
+                                <span class="align-middle ml-2 mr-2"> or </span>
+
+                                <select name="{{ project.name }}" onchange="gotodocs(this);"
+                                        class="btn btn-success dropdown-toggle " type="button"
+                                        role="menu" aria-haspopup="true" aria-expanded="false">
+                                    {% for version in project.versions | reverse %}
+                                        <option value="{{ version.url }}">{{ version.version }}</option>
+                                    {% endfor %}
+                                </select>
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+
+        </div>
+        <!-- /.row -->
+        {% if copyright %}
+
+        <hr>
+
+        <footer>
+            <div class="row">
+                <div class="col-lg-12">
+                    <p>{{ copyright|safe }}</p>
+                </div>
+            </div>
+        </footer>
+
+        {% endif %}
+
+    </div>
+    <!-- /.container -->
+
+{% endblock %}

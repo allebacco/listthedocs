@@ -1,0 +1,6 @@
+recursive-include listthedocs *.py
+recursive-include listthedocs/templates *.html
+include *.py
+include LICENSE.txt
+include README.rst
+include requirements.txt
