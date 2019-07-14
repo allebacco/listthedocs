@@ -8,6 +8,7 @@ Currently there is no authorization control, so anybody can interact with these 
 
 The following call will add a project:
 
+    :::HTTP
     POST /api/v1/projects
     Content-Type: application/json
 
@@ -21,6 +22,7 @@ The *logo* field is optional.
 
 The response has the following format:
 
+    :::HTTP
     HTTP/1.1 201 Created
     Content-Type: application/json
     
@@ -36,10 +38,12 @@ The response has the following format:
 
 The following call will read a project named *Project-Name*:
 
+    :::HTTP
     GET /api/v1/projects/Project-Name
 
 If the project exists, the following response will returns:
 
+    :::HTTP
     HTTP/1.1 200 Ok
     Content-Type: application/json
     
@@ -56,10 +60,12 @@ If the project does not exists, a 404 response code will be returned.
 
 The following call will read all the projects:
 
+    :::HTTP
     GET /api/v1/projects
 
 The following response will returns:
 
+    :::HTTP
     HTTP/1.1 200 Ok
     Content-Type: application/json
     
@@ -83,6 +89,7 @@ The following response will returns:
 It is possible to update the *description* or the *logo* of a Project using the following
 call:
 
+    :::HTTP
     PATCH /api/v1/projects/Project-Name
     Content-Type: application/json
 
@@ -95,6 +102,7 @@ It is possible to update only the *logo* or only the *description*.
 
 The response has the following format:
 
+    :::HTTP
     HTTP/1.1 200 Ok
     Content-Type: application/json
     
@@ -102,5 +110,106 @@ The response has the following format:
         "name": "Project-Name",
         "description": "An optional new description",
         "logo": "http://www.projectname.com/an-optional-new-logo.png",
+        "versions": []
+    }
+
+## Removing a Project
+
+It is possible to remove a Project (and all its versions) using the following call:
+
+    :::HTTP
+    DELETE /api/v1/projects/Project-Name
+
+The response has the following format:
+
+    :::HTTP
+    HTTP/1.1 200 Ok
+
+## Adding a new documentation Version to a Project
+
+The following call will add a new documentation version to the *Project-Name*
+project:
+
+    :::HTTP
+    POST /api/v1/projects/Project-Name/versions
+    Content-Type: application/json
+
+    {
+        "name": "1.0.0",
+        "url": "https://www.example.com/doc/1.0.0/"
+    }
+
+The response has the following format:
+
+    :::HTTP
+    HTTP/1.1 201 Created
+    Content-Type: application/json
+    
+    {
+        "name": "Project-Name",
+        "description": "A not too long description of the project",
+        "logo": "http://www.projectname.com/logo.png",
+        "versions": [
+            {
+                "name": "1.0.0",
+                "url": "https://www.example.com/doc/1.0.0/"
+            }
+        ]
+    }
+
+Each Project can have multiple documentation versions.
+
+## Updating a documentation Version
+
+After adding a documentation version to a Project, it is possible to update
+it (e.g. in case documentation has been moved to a different URL).
+
+The *name* field can't be changed.
+
+The following call will update the documentation URL:
+
+    :::HTTP
+    PATCH /api/v1/projects/Project-Name/versions/1.0.0
+    Content-Type: application/json
+
+    {
+        "url": "https://www.projectname.com/doc/1.0.0/"
+    }
+
+The response has the following format:
+
+    :::HTTP
+    HTTP/1.1 200 Ok
+    Content-Type: application/json
+    
+    {
+        "name": "Project-Name",
+        "description": "A not too long description of the project",
+        "logo": "http://www.projectname.com/logo.png",
+        "versions": [
+            {
+                "name": "1.0.0",
+                "url": "https://www.projectname.com/doc/1.0.0/"
+            }
+        ]
+    }
+
+## Removing a Version from a Project
+
+It is possible to remove a Version from a Project using the following call:
+
+    :::HTTP
+    DELETE /api/v1/projects/Project-Name/versions/1.0.0
+
+The response has the following format:
+
+    :::HTTP
+    HTTP/1.1 200 Ok
+    Content-Type: application/json
+    
+    {
+        "name": "Project-Name",
+        "description": "A not too long description of the project",
+        "logo": "http://www.projectname.com/logo.png",
         "versions": []
     }

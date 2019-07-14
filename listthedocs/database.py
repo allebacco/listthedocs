@@ -116,46 +116,6 @@ def get_project(name: str) -> Project:
     return project
 
 
-def update_project_description(project: str, new_description: str):
-
-    db = get_db()
-    cursor = db.execute('SELECT rowid FROM projects WHERE name=?', [project])
-    row = cursor.fetchone()
-    if row is None:
-        return False
-
-    project_id = row[0]
-
-    db.execute(
-        'UPDATE projects SET description = ? WHERE rowid = ?',
-        [new_description, project_id]
-    )
-
-    db.commit()
-
-    return True
-
-
-def update_project_logo(project: str, new_logo: str):
-
-    db = get_db()
-    cursor = db.execute('SELECT rowid FROM projects WHERE name=?', [project])
-    row = cursor.fetchone()
-    if row is None:
-        return False
-
-    project_id = row[0]
-
-    db.execute(
-        'UPDATE projects SET logo = ? WHERE rowid = ?',
-        [new_logo, project_id]
-    )
-
-    db.commit()
-
-    return True
-
-
 def update_project(project_name: str, description: str=None, logo: str=None):
 
     db = get_db()
@@ -178,6 +138,23 @@ def update_project(project_name: str, description: str=None, logo: str=None):
             [logo, project_id]
         )
 
+    db.commit()
+
+    return True
+
+
+def delete_project(project_name):
+
+    db = get_db()
+    cursor = db.execute('SELECT rowid FROM projects WHERE name=?', [project_name])
+    row = cursor.fetchone()
+    if row is None:
+        return True
+
+    project_id = row[0]
+
+    db.execute('DELETE FROM versions WHERE project_id=?', [project_id])
+    db.execute('DELETE FROM projects WHERE rowid=?', [project_id])
     db.commit()
 
     return True

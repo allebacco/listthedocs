@@ -118,6 +118,17 @@ def test_update_project_logo(ltd_client: ListTheDocs):
     assert project.logo == 'logo.jpg'
 
 
+def test_delete_project(ltd_client: ListTheDocs):
+
+    ltd_client.add_project(Project('test_project1', 'description1'))
+    ltd_client.add_version('test_project1', Version('1.0.0', 'www.example.com/index.html'))
+
+    ltd_client.delete_project('test_project1')
+
+    project = ltd_client.get_project('test_project1')
+    assert project is None
+
+
 def test_add_version(ltd_client: ListTheDocs):
 
     ltd_client.add_project(Project('test_project1', 'description1'))

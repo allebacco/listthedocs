@@ -136,6 +136,12 @@ class ListTheDocs:
 
         return Project.from_json(response.json())
 
+    def delete_project(self, project_name: str):
+        endpoint_url = self._base_url + '/api/v1/projects/{}'.format(project_name)
+        response = self._session.delete(endpoint_url)
+        if response.status_code != 200:
+            raise RuntimeError('Error during removing project')
+
     def add_version(self, project_name: str, version: Version) -> Project:
         endpoint_url = self._base_url + '/api/v1/projects/{}/versions'.format(project_name)
         response = self._session.post(endpoint_url, json=version.to_json())

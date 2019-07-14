@@ -76,6 +76,18 @@ def update_project(project_name):
     return json_response(500, json={'message': 'Error during updating project ' + project_name})
 
 
+@projects_apis.route('/api/v1/projects/<project_name>', methods=['DELETE'])
+def delete_project(project_name):
+    if current_app.config['READONLY']:
+        return json_response(403, json={'message': 'Service is Readonly'})
+
+    ok = database.delete_project(project_name)
+    if ok is True:
+        return json_response(200, json={'message': 'Removed project ' + project_name})
+
+    return json_response(500, json={'message': 'Error during removing project ' + project_name})
+
+
 @projects_apis.route('/api/v1/projects/<project_name>/versions', methods=['POST'])
 def add_version(project_name):
     if current_app.config['READONLY']:
