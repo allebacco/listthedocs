@@ -143,9 +143,53 @@ client = ListTheDocs()
 
 project = # ... Create Project-Name project
 
-# Remove the project
+# Add a project version
 project = client.add_version(
     'Project-Name', 
     Version('1.0.0', 'http://www.example.com/doc/1.0.0/index.html')
 )
+```
+
+Each Project can have multiple documentation versions.
+
+### Updating a documentation Version
+
+After adding a documentation version to a Project, it is possible to update
+it (e.g. in case documentation has been moved to a different URL).
+
+The *name* field can't be changed.
+
+The following code will update the documentation URL:
+
+``` python
+from listthedocs.client import ListTheDocs, Project, Version
+
+# Instantiate the client with default service location
+client = ListTheDocs()
+
+project = # ... Create Project-Name project
+project = # ... Add a project version 1.0.0
+
+# Update the project version URL
+project = client.update_version(
+    'Project-Name', '1.0.0', 
+    url='http://www.example.com/new_doc/1.0.0/index.html'
+)
+```
+
+### Removing a Version from a Project
+
+It is possible to remove a Version from a Project using the following code:
+
+``` python
+from listthedocs.client import ListTheDocs, Project, Version
+
+# Instantiate the client with default service location
+client = ListTheDocs()
+
+project = # ... Create Project-Name project
+project = # ... Add a project version 1.0.0
+
+# Delete project version
+project = client.delete_version('Project-Name', '1.0.0')
 ```

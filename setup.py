@@ -11,6 +11,7 @@ setup(
     install_requires=[
         'Flask',
         'natsort',
+        'requests',
     ],
     tests_require=[
         'pytest'

@@ -3,28 +3,53 @@ import requests
 import base64
 
 class Entity(ABC):
+    """Base entity object that can convert to a from JSON.
+    """
 
     @abstractmethod
     def to_json(self) -> dict:
+        """Convert self object into JSON represntation.
+
+        Returns:
+            dict: The JSON representation
+        """
         pass
 
     @abstractstaticmethod
     def from_json(obj: dict) -> 'Entity':
+        """Create an entity instance from the JSON representation.
+
+        Args:
+            obj(dict): The JSON representation
+
+        Returns:
+            Entity: The entity instance
+        """
         pass
 
 
 class Version(Entity):
+    """The documentation version
+    """
 
     def __init__(self, name: str, url: str):
+        """Constructor.
+
+        Args:
+            name(str): The name of the version (e.g. 1.0.0)
+            url(str): The documentation URL
+        """
         self._name = name
         self._url = url
 
     @property
     def name(self) -> str:
+        """str: The version Name"""
         return self._name
 
     @property
     def url(self) -> str:
+        """str: The version URL"""
         return self._url
 
     def to_json(self):
@@ -36,8 +61,19 @@ class Version(Entity):
 
 
 class Project(Entity):
+    """The project
+    """
 
     def __init__(self, name: str, description: str, logo: str=None, versions=tuple()):
+        """Contructor.
+
+        Args:
+            name(str): The name of the project
+            description(str): The description of the project
+
+        Keyword Args:
+            logo(str): The logo of the project
+        """
         self._name = name
         self._description = description
         self._versions = versions
@@ -45,21 +81,33 @@ class Project(Entity):
 
     @property
     def name(self) -> str:
+        """str: The name of the project"""
         return self._name
 
     @property
     def description(self) -> str:
+        """str: The description of the project"""
         return self._description
 
     @property
     def logo(self) -> str:
+        """The logo of the project"""
         return self._logo
 
     @property
     def versions(self) -> str:
+        """tuple[Version]: The project documentation versions."""
         return self._versions
 
     def get_version(self, version_name) -> Version:
+        """Get a documentation version.
+
+        Args:
+            version_name(str): The name of the version to get
+
+        Returns:
+            Version: The requested version or None if not present
+        """
         if len(self._versions) == 0:
             return None
 
@@ -90,8 +138,16 @@ class Project(Entity):
 
 
 class ListTheDocs:
+    """ListTheDocs client"""
 
     def __init__(self, host: str='localhost', port: int=5000, protocol: str='http'):
+        """Constructor.
+
+        Keyword Args:
+            host(str): The hostname of the service. Default 'localhost'
+            port(int): The port of the service. Default 5000
+            protocol(str): The connection protocol ('http' or 'https')
+        """
         self._base_url = '{}://{}:{}'.format(protocol, host, port)
         self._session = requests.Session()
 
