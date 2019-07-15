@@ -11,7 +11,7 @@ Currently there is no authorization control, so anybody can interact with these 
 The following call will add a project:
 
 ``` http
-POST /api/v1/projects
+POST /api/v1/projects HTTP/1.1
 Content-Type: application/json
 
 {
@@ -21,11 +21,17 @@ Content-Type: application/json
 }
 ```
 
+| Field       | Type  | Description |
+|:-----------:|:-----:|:-----------:|
+| name        | *str* | The name of the project |
+| description | *str* | The description of the project. Custom HTML is allowed. |
+| logo        | *str* | The Logo of the project (optional). |
+
 The *logo* field is optional.
 
 The response has the following format:
 
-```
+``` http
 HTTP/1.1 201 Created
 Content-Type: application/json
 
@@ -42,7 +48,7 @@ Content-Type: application/json
 The following call will read a project named *Project-Name*:
 
 ``` http
-GET /api/v1/projects/Project-Name
+GET /api/v1/projects/Project-Name HTTP/1.1
 ```
 
 If the project exists, the following response will returns:
@@ -65,13 +71,13 @@ If the project does not exists, a 404 response code will be returned.
 
 The following call will read all the projects:
 
-```
-GET /api/v1/projects
+``` http
+GET /api/v1/projects HTTP/1.1
 ```
 
 The following response will returns:
 
-```
+``` http
 HTTP/1.1 200 Ok
 Content-Type: application/json
 
@@ -96,8 +102,8 @@ Content-Type: application/json
 It is possible to update the *description* or the *logo* of a Project using the following
 call:
 
-```
-PATCH /api/v1/projects/Project-Name
+``` http
+PATCH /api/v1/projects/Project-Name HTTP/1.1
 Content-Type: application/json
 
 {
@@ -110,7 +116,7 @@ It is possible to update only the *logo* or only the *description*.
 
 The response has the following format:
 
-```
+``` http
 HTTP/1.1 200 Ok
 Content-Type: application/json
 
@@ -126,13 +132,13 @@ Content-Type: application/json
 
 It is possible to remove a Project (and all its versions) using the following call:
 
-```
-DELETE /api/v1/projects/Project-Name
+``` http
+DELETE /api/v1/projects/Project-Name HTTP/1.1
 ```
 
 The response has the following format:
 
-```
+``` http
 HTTP/1.1 200 Ok
 ```
 
@@ -143,8 +149,8 @@ HTTP/1.1 200 Ok
 The following call will add a new documentation version to the *Project-Name*
 project:
 
-```
-POST /api/v1/projects/Project-Name/versions
+``` http
+POST /api/v1/projects/Project-Name/versions HTTP/1.1
 Content-Type: application/json
 
 {
@@ -153,9 +159,14 @@ Content-Type: application/json
 }
 ```
 
+| Field       | Type  | Description |
+|:-----------:|:-----:|:-----------:|
+| name        | *str* | The name of the docuemtation version (e.g. *1.0.0*). |
+| url         | *str* | The url to the to the documentation files. |
+
 The response has the following format:
 
-```
+``` http
 HTTP/1.1 201 Created
 Content-Type: application/json
 
@@ -183,8 +194,8 @@ The *name* field can't be changed.
 
 The following call will update the documentation URL:
 
-```
-PATCH /api/v1/projects/Project-Name/versions/1.0.0
+``` http
+PATCH /api/v1/projects/Project-Name/versions/1.0.0 HTTP/1.1
 Content-Type: application/json
 
 {
@@ -194,7 +205,7 @@ Content-Type: application/json
 
 The response has the following format:
 
-```
+``` http
 HTTP/1.1 200 Ok
 Content-Type: application/json
 
@@ -215,13 +226,13 @@ Content-Type: application/json
 
 It is possible to remove a Version from a Project using the following call:
 
-```
-DELETE /api/v1/projects/Project-Name/versions/1.0.0
+``` http
+DELETE /api/v1/projects/Project-Name/versions/1.0.0 HTTP/1.1
 ```
 
 The response has the following format:
 
-```
+``` http
 HTTP/1.1 200 Ok
 Content-Type: application/json
 

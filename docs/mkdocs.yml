@@ -18,3 +18,4 @@ nav:
 
 markdown_extensions:
   - codehilite
+  - admonition
