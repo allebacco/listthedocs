@@ -3,6 +3,8 @@
 List The Docs allows to collect the documentation of projects hosted in
 different servers in the same page.
 
+See full documentation at https://allebacco.github.io/listthedocs/.
+
 List The Docs does not (actually) provides documentation hosting, but it
 offer only a web page with a nice list of project and documentation links.
 
