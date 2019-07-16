@@ -47,3 +47,6 @@ nosetests.xml
 
 # Flask generated files
 instance
+
+# Mkdocs site dir
+docs/site
