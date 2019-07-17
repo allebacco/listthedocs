@@ -25,7 +25,7 @@
                 <div class="card">
                     <div class="card-body p-2">
                         <h4 class="card-title">{{ project.name }}</h4>
-                        {% if project.logo is not None %}
+                        {% if project.logo is not none %}
                             <img class="rounded mx-auto d-block" src="{{ project.logo }}"  alt="">
                         {% endif %}
                         <p class="card-text mt-2"> {{ project.description|safe }} </p>
@@ -43,7 +43,7 @@
                                         class="btn btn-success dropdown-toggle " type="button"
                                         role="menu" aria-haspopup="true" aria-expanded="false">
                                     {% for version in project.versions | reverse %}
-                                        <option value="{{ version.url }}">{{ version.version }}</option>
+                                        <option value="{{ version.url }}">{{ version.name }}</option>
                                     {% endfor %}
                                 </select>
                             </p>

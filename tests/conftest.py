@@ -15,7 +15,7 @@ def app():
     # create the app with common test config
     app = create_app({
         'TESTING': True,
-        'DATABASE': db_path,
+        'DATABASE': db_path
     })
 
     # create the database and load test data

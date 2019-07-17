@@ -20,8 +20,7 @@ def create_app(override_config: dict=None):
         COPYRIGHT='List The Docs',
         TITLE='Software documentation',
         HEADER="<h2>Software documentation</h2>",
-
-        READONLY=False
+        READONLY=False,
     )
 
     app.config.from_pyfile('config.py', silent=True)
@@ -37,6 +36,9 @@ def create_app(override_config: dict=None):
     # Initialize database
     from . import database
     database.init_app(app)
+
+    from . import commands
+    app.cli.add_command(commands.add_listthedocs_project)
 
     # Setup endpoints
     from .controllers import projects, webui
