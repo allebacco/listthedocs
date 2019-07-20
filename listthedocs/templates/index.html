@@ -7,22 +7,31 @@
          var selectedValue = obj.options[obj.selectedIndex].value;
          window.location.href = selectedValue;
         }
+
+        function on_filter_text_changed()
+        {
+            var filter_text = document.getElementById("project-filter").value.toLowerCase();
+
+            var project_cards = document.getElementById('project-list').getElementsByClassName("card");
+            for( var i = 0; i<project_cards.length; i++) {
+                project_name = project_cards[i].getAttribute("id").toLowerCase();
+                if(project_name.includes(filter_text) || filter_text == "")
+                    project_cards[i].style.visibility = "visible";
+                else
+                    project_cards[i].style.visibility = "hidden";
+            }
+        }
     </script>
 
     <div class="container">
 
-        <div class="jumbotron">
-            <p>{{ header|safe }}</p>
-            </p>
-        </div>
-
         <!-- /.row -->
 
-        <div class="card-columns">
+        <div id="project-list"  class="card-columns">
 
             {% for project in projects %}
 
-                <div class="card">
+                <div class="card" id="{{ project.name }}">
                     <div class="card-body p-2">
                         <h4 class="card-title">{{ project.name }}</h4>
                         {% if project.logo is not none %}
