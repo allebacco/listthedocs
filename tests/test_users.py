@@ -3,15 +3,22 @@ import pytest
 from datetime import datetime
 
 
+ADMIN_HEADER = {'Api-Key': 'secret-key'}
+
+
 def test_get_missing_user(client):
 
-    response = client.get('/api/v1/users/test_user')
+    response = client.get('/api/v1/users/test_user', headers=ADMIN_HEADER)
     assert response.status_code == 404
 
 
 def test_add_user_creates_and_returns_the_user_with_apikey(client):
 
-    response = client.post('/api/v1/users', json={'name': 'new_user', 'is_admin': True})
+    response = client.post(
+        '/api/v1/users',
+        json={'name': 'new_user', 'is_admin': True},
+        headers=ADMIN_HEADER
+    )
     assert response.status_code == 201
 
     user = response.get_json()
@@ -28,12 +35,16 @@ def test_add_user_creates_and_returns_the_user_with_apikey(client):
 
 def test_get_user_returns_the_expected_user(client):
 
-    response = client.post('/api/v1/users', json={'name': 'user1', 'is_admin': True})
+    response = client.post(
+        '/api/v1/users', json={'name': 'user1', 'is_admin': True}, headers=ADMIN_HEADER
+    )
     assert response.status_code == 201
-    response = client.post('/api/v1/users', json={'name': 'user2', 'is_admin': False})
+    response = client.post(
+        '/api/v1/users', json={'name': 'user2', 'is_admin': False}, headers=ADMIN_HEADER
+    )
     assert response.status_code == 201
 
-    response = client.get('/api/v1/users/user2')
+    response = client.get('/api/v1/users/user2', headers=ADMIN_HEADER)
 
     user = response.get_json()
     assert user['name'] == 'user2'

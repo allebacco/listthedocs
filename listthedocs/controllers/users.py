@@ -5,14 +5,15 @@ from flask import Blueprint, current_app, abort, Flask, jsonify, redirect, rende
 
 from ..entities import User, ApiKey
 from .. import database
-from .utils import json_response
-from ..security import generate_api_key
+from .utils import json_response, generate_api_key
+from ..security import ensure_admin
 
 
 users_apis = Blueprint('users_apis', __name__)
 
 
 @users_apis.route('/api/v1/users', methods=['POST'])
+@ensure_admin
 def add_user():
     if current_app.config['READONLY']:
         return json_response(403, json={'message': 'Service is Readonly'})
@@ -42,3 +43,9 @@ def get_user_by_name(name):
     if user is None:
         return json_response(404, json={'message': 'User ' + name + ' does not exists'})
     return json_response(200, json=user)
+
+
+@users_apis.route('/api/v1/users', methods=['GET'])
+def get_users():
+    users = database.get_users()
+    return json_response(200, json=users)

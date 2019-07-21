@@ -1,3 +1,5 @@
+import secrets
+
 from flask import Response, json as flask_json
 
 from ..entities import Entity
@@ -26,3 +28,7 @@ def json_response(code: int, *, json: 'dict or Entity or list[Entity]') -> Respo
         raise TypeError('json must be a dict, an Entity or a list of entities')
 
     return Response(response=flask_json.dumps(json), status=code, mimetype='application/json')
+
+
+def generate_api_key() -> str:
+    return secrets.token_urlsafe()

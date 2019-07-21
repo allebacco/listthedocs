@@ -73,12 +73,16 @@ def init_db():
     """)
 
 
-@click.command('init-db')
-@with_appcontext
-def init_db_command():
-    """Clear existing data and create new tables."""
-    init_db()
-    click.echo('Initialized the database.')
+def init_root_user():
+
+    root_user = get_user_by_name('root')
+    if root_user is not None:
+        return
+
+    key = current_app.config['ROOT_API_KEY']
+    user = User('root', True, datetime.utcnow())
+    api_key = ApiKey(key, True, user.created_at)
+    add_user_with_api_key(user, api_key)
 
 
 def init_app(app):
@@ -86,7 +90,10 @@ def init_app(app):
     the application factory.
     """
     app.teardown_appcontext(close_db)
-    app.cli.add_command(init_db_command)
+
+    with app.app_context():
+        init_db()
+        init_root_user()
 
 
 def add_project(name: str, description: str, logo: str) -> Project:
@@ -290,3 +297,38 @@ def get_api_keys_for_user(name: str) -> 'list[ApiKey]':
         api_keys.append(api_key)
 
     return api_keys
+
+
+def get_users() -> User:
+
+    users = list()
+
+    db = get_db()
+    cursor = db.execute('SELECT id, name, is_admin, created_at FROM users')
+    for row in cursor:
+        created_at = datetime.strptime(row[3], "%Y-%m-%dT%H:%M:%S.%f")
+        user = User(row[1], row[2] != 0, created_at, id=row[0])
+        user.api_keys = get_api_keys_for_user(user.name)
+        users.append(user)
+
+    return users
+
+
+def get_user_for_api_key(api_key: str) -> User:
+
+    db = get_db()
+    cursor = db.execute('''
+        SELECT users.id, users.name, users.is_admin, users.created_at
+        FROM users
+        LEFT JOIN api_keys ON api_keys.id = users.id
+        WHERE api_keys.key = ? AND api_keys.is_valid = 1
+        ''', [api_key]
+    )
+    row = cursor.fetchone()
+    if row is None:
+        return None
+
+    created_at = datetime.strptime(row[3], "%Y-%m-%dT%H:%M:%S.%f")
+    user = User(row[1], row[2] != 0, created_at, id=row[0])
+
+    return user

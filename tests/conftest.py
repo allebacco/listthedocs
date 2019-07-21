@@ -15,12 +15,9 @@ def app():
     # create the app with common test config
     app = create_app({
         'TESTING': True,
-        'DATABASE': db_path
+        'DATABASE': db_path,
+        'ROOT_API_KEY': 'secret-key',
     })
-
-    # create the database and load test data
-    with app.app_context():
-        init_db()
 
     yield app
 

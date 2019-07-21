@@ -21,6 +21,7 @@ def create_app(override_config: dict=None):
         TITLE='Software documentation',
         HEADER="<h2>Software documentation</h2>",
         READONLY=False,
+        ROOT_API_KEY='ROOT-API-KEY'
     )
 
     app.config.from_pyfile('config.py', silent=True)
