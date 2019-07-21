@@ -5,6 +5,7 @@ from datetime import datetime
 
 ADMIN_HEADER = {'Api-Key': 'secret-key'}
 
+
 class HashableDict(dict):
     def __hash__(self):
         return hash(frozenset(self.items()))
@@ -127,6 +128,3 @@ def test_add_and_remove_user_roles(client):
     roles = response.get_json()
     assert set(HashableDict(d) for d in roles) == set(HashableDict(d) for d in new_roles)
     assert len(roles) == len(new_roles)
-    print(roles)
-    print(new_roles)
-

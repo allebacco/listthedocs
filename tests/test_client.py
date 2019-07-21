@@ -5,6 +5,9 @@ from listthedocs import ListTheDocs
 from listthedocs.client import Project, Version
 
 
+ADMIN_HEADER = {'Api-Key': 'secret-key'}
+
+
 class MockClientResponse:
 
     def __init__(self, response):
@@ -29,19 +32,19 @@ class MockClientSession:
 
     def get(self, url: str):
         url = self._fix_url(url)
-        return MockClientResponse(self._client.get(url))
+        return MockClientResponse(self._client.get(url, headers=ADMIN_HEADER))
 
     def post(self, url: str, *, json):
         url = self._fix_url(url)
-        return MockClientResponse(self._client.post(url, json=json))
+        return MockClientResponse(self._client.post(url, json=json, headers=ADMIN_HEADER))
 
     def patch(self, url: str, *, json):
         url = self._fix_url(url)
-        return MockClientResponse(self._client.patch(url, json=json))
+        return MockClientResponse(self._client.patch(url, json=json, headers=ADMIN_HEADER))
 
     def delete(self, url: str):
         url = self._fix_url(url)
-        return MockClientResponse(self._client.delete(url))
+        return MockClientResponse(self._client.delete(url, headers=ADMIN_HEADER))
 
 
 @pytest.fixture

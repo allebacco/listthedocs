@@ -3,6 +3,7 @@ import functools
 from flask import request, current_app, Response, json as flask_json
 from werkzeug.local import LocalProxy
 from . import database
+from . entities import Roles
 
 
 def get_authenticated_user():
@@ -88,9 +89,9 @@ def fail_if_readonly(controller_func):
     return decorated_view
 
 
-def has_role(role_name, project_name):
+def has_role(role: Roles, project_name: str) -> bool:
     if current_app.config['LOGIN_DISABLED'] is True:
         return True
 
-    return database.check_user_has_role(current_user.name, role_name, project_name)
+    return database.check_user_has_role(current_user.name, role.value, project_name)
 
