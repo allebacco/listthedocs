@@ -39,7 +39,7 @@ def ensure_admin(controller_func):
 
     @functools.wraps(controller_func)
     def decorated_view(*args, **kwargs):
-        if current_app.config.get('LOGIN_DISABLED'):
+        if current_app.config['LOGIN_DISABLED'] is True:
             return controller_func(*args, **kwargs)
 
         if current_user._get_current_object() is None or current_user.is_admin is False:
@@ -50,4 +50,47 @@ def ensure_admin(controller_func):
             )
 
         return controller_func(*args, **kwargs)
+
     return decorated_view
+
+
+def ensure_logged_user(controller_func):
+
+    @functools.wraps(controller_func)
+    def decorated_view(*args, **kwargs):
+        if current_app.config['LOGIN_DISABLED'] is True:
+            return controller_func(*args, **kwargs)
+
+        if current_user._get_current_object() is None:
+            return Response(
+                response=flask_json.dumps({'message': 'Invalid Api-Key'}),
+                status=403,
+                mimetype='application/json'
+            )
+
+        return controller_func(*args, **kwargs)
+
+    return decorated_view
+
+
+def fail_if_readonly(controller_func):
+
+    @functools.wraps(controller_func)
+    def decorated_view(*args, **kwargs):
+        if current_app.config['READONLY']:
+            return Response(
+                response=flask_json.dumps({'message': 'Service is Readonly'}),
+                status=403,
+                mimetype='application/json'
+            )
+        return controller_func(*args, **kwargs)
+
+    return decorated_view
+
+
+def has_role(role_name, project_name):
+    if current_app.config['LOGIN_DISABLED'] is True:
+        return True
+
+    return database.check_user_has_role(current_user.name, role_name, project_name)
+

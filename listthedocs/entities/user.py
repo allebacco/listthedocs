@@ -1,5 +1,6 @@
 from datetime import datetime
 from abc import abstractmethod
+from enum import Enum, unique
 
 from .entity import Entity
 
@@ -18,6 +19,31 @@ class ApiKey(Entity):
             'is_valid': self.is_valid,
             'created_at': self.created_at.isoformat(),
         }
+
+
+@unique
+class Roles(Enum):
+
+    UPDATE_PROJECT = 'UPDATE_PROJECT'
+    REMOVE_PROJECT = 'REMOVE_PROJECT'
+    ADD_VERSION = 'ADD_VERSION'
+    UPDATE_VERSION = 'UPDATE_VERSION'
+    REMOVE_VERSION = 'REMOVE_VERSION'
+
+    @staticmethod
+    def is_valid(name: str) -> bool:
+        return name in (e.name for e in Roles)
+
+
+class Role(Entity):
+
+    def __init__(self, name: str, project: str, id: int):
+        self.id = id
+        self.name = name
+        self.project = project
+
+    def to_json(self) -> dict:
+        return {'role_name': self.name, 'project_name': self.project}
 
 
 class User(Entity):

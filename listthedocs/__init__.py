@@ -16,12 +16,13 @@ def create_app(override_config: dict=None):
     app.config.from_mapping(
         # store the database in the instance folder
         DATABASE=os.path.join(app.instance_path, 'listthedocs.sqlite'),
+        ROOT_API_KEY='ROOT-API-KEY',
+        LOGIN_DISABLED=False,
 
         COPYRIGHT='List The Docs',
         TITLE='Software documentation',
         HEADER="<h2>Software documentation</h2>",
         READONLY=False,
-        ROOT_API_KEY='ROOT-API-KEY'
     )
 
     app.config.from_pyfile('config.py', silent=True)

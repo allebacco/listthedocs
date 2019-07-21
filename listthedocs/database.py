@@ -6,7 +6,7 @@ from datetime import datetime
 from flask import current_app, g
 from flask.cli import with_appcontext
 
-from .entities import Project, Version, User, ApiKey
+from .entities import Project, Version, User, ApiKey, Role
 
 
 def get_db():
@@ -69,6 +69,17 @@ def init_db():
             url TEXT NOT NULL,
             UNIQUE(project_id, name),
             FOREIGN KEY(project_id) REFERENCES projects(id)
+        );
+
+        CREATE TABLE IF NOT EXISTS roles (
+            id INTEGER PRIMARY KEY ASC,
+            name TEXT NOT NULL,
+            project_id INTEGER NOT NULL,
+            user_id INTEGER NOT NULL,
+            created_at TEXT NOT NULL,
+            UNIQUE(name, project_id, user_id),
+            FOREIGN KEY(project_id) REFERENCES projects(id),
+            FOREIGN KEY(user_id) REFERENCES users(id)
         );
     """)
 
@@ -332,3 +343,82 @@ def get_user_for_api_key(api_key: str) -> User:
     user = User(row[1], row[2] != 0, created_at, id=row[0])
 
     return user
+
+
+def get_roles_for_user(name) -> 'list[Role]':
+
+    roles = list()
+    db = get_db()
+    cursor = db.execute('''
+        SELECT roles.name, projects.name, roles.id
+        FROM roles
+        LEFT JOIN users ON roles.id = roles.id
+        LEFT JOIN projects ON projects.id = roles.project_id
+        WHERE users.name = ?
+        ''', [name]
+    )
+    for row in cursor:
+        role = Role(row[0], row[1], row[2])
+        roles.append(role)
+
+    return roles
+
+
+def add_role_to_user(user_name, role_name, project_name):
+
+    user = get_user_by_name(user_name)
+    if user is None:
+        return False
+    project = get_project(project_name)
+    if project is None:
+        return False
+
+    created_at = datetime.utcnow().isoformat()
+
+    db = get_db()
+    db.execute(
+        'INSERT OR IGNORE INTO roles(name, project_id, user_id, created_at) VALUES(?,?,?,?)',
+        [role_name, project.id, user.id, created_at]
+    )
+    db.commit()
+
+    return True
+
+
+def remove_role_from_user(user_name, role_name, project_name):
+
+    user = get_user_by_name(user_name)
+    if user is None:
+        return False
+    project = get_project(project_name)
+    if project is None:
+        return False
+
+    db = get_db()
+    db.execute(
+        'DELETE FROM roles WHERE name=? AND project_id=? AND user_id=?',
+        [role_name, project.id, user.id]
+    )
+    db.commit()
+
+    return True
+
+
+def check_user_has_role(user_name, role_name, project_name) -> bool:
+
+    user = get_user_by_name(user_name)
+    if user is None:
+        return False
+    project = get_project(project_name)
+    if project is None:
+        return False
+
+    db = get_db()
+    cursor = db.execute(
+        'SELECT count(*) FROM roles WHERE name=? AND project_id=? AND user_id=?',
+        [role_name, project.id, user.id]
+    )
+    count = cursor.fetchone()[0]
+    db.commit()
+
+    return count == 1
