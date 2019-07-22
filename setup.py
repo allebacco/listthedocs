@@ -12,6 +12,8 @@ setup(
         'Flask',
         'natsort',
         'requests',
+        'attrs',
+        'python-dateutil',
     ],
     tests_require=[
         'pytest'

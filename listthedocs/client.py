@@ -1,8 +1,13 @@
 import requests
 import base64
+import attr
 
+from typing import List, Union
+from datetime import datetime
 from abc import ABC, abstractmethod, abstractstaticmethod
 from enum import Enum, unique
+
+from .attr_utils import ListOf, String, Bool, DateTime
 
 
 class Entity(ABC):
@@ -140,20 +145,15 @@ class Project(Entity):
         )
 
 
-class ApiKey(Entity):
+@attr.s
+class ApiKey:
 
-    def __init__(self, key: str, is_valid: bool):
-        self.key = key
-        self.is_valid = is_valid
+    key = String()
+    is_valid = Bool()
+    created_at = DateTime()
 
     def to_json(self) -> dict:
-        return {
-            'key': self.key,
-            'is_valid': self.is_valid,
-        }
-
-    def from_json(obj: dict) -> 'ApiKey':
-        return ApiKey(obj['key'], obj['is_valid'])
+        return attr.asdict(self)
 
 
 @unique
@@ -170,32 +170,26 @@ class Roles(Enum):
         return name in (e.name for e in Roles)
 
 
-class Role(Entity):
+@attr.s
+class Role:
 
-    def __init__(self, name: str, project: str):
-        self.name = name
-        self.project = project
-
-    def to_json(self) -> dict:
-        return {'role_name': self.name, 'project_name': self.project}
-
-
-class User(Entity):
-
-    def __init__(self, name: str, is_admin: bool, created_at: datetime, id: int=None):
-        self.id = id
-        self.name = name
-        self.is_admin = is_admin
-        self.created_at = created_at
-        self.api_keys = tuple()
+    role_name = String()
+    project_name = String()
 
     def to_json(self) -> dict:
-        return {
-            'name': self.name,
-            'is_admin': self.is_admin,
-            'created_at': self.created_at.isoformat(),
-            'api_keys': [k.to_json() for k in self.api_keys]
-        }
+        return attr.asdict(self)
+
+
+@attr.s
+class User:
+
+    name = String()
+    is_admin = String()
+    created_at = DateTime()
+    api_keys = ListOf(ApiKey)
+
+    def to_json(self) -> dict:
+        return attr.asdict(self)
 
 
 
@@ -320,3 +314,47 @@ class ListTheDocsAdmin:
         self._session = requests.Session()
         if api_key is not None:
             self._session.headers['Api-Key'] = api_key
+
+    def add_user(self, name, *, is_admin=False) -> User:
+        endpoint_url = self._base_url + '/api/v1/users'
+        response = self._session.post(endpoint_url, json={'name': name, 'is_admin': is_admin})
+        if response.status_code != 201:
+            raise RuntimeError('Error during adding user ' + name)
+
+        return User(**response.json())
+
+    def get_user(self, name) -> User:
+        endpoint_url = self._base_url + '/api/v1/users/' + name
+        response = self._session.get(endpoint_url)
+        if response.status_code != 200:
+            raise RuntimeError('Error during getting user ' + name)
+
+        return User(**response.json())
+
+    def get_users(self) -> List[User]:
+        endpoint_url = self._base_url + '/api/v1/users'
+        response = self._session.get(endpoint_url)
+        if response.status_code != 200:
+            raise RuntimeError('Error during getting users ')
+
+        return [User(**u) for u in response.json()]
+
+    def add_role(self, user: Union[str, User], role: Role):
+        if isinstance(user, User):
+            user = user.name
+        endpoint_url = self._base_url + '/api/v1/users/' + user + '/roles'
+
+        response = self._session.patch(endpoint_url, json=[role.to_json()])
+        if response.status_code != 200:
+            raise RuntimeError(response.json()['message'])
+
+    def get_roles(self, user: Union[str, User]) -> List[Role]:
+        if isinstance(user, User):
+            user = user.name
+        endpoint_url = self._base_url + '/api/v1/users/' + user + '/roles'
+
+        response = self._session.get(endpoint_url)
+        if response.status_code != 200:
+            raise RuntimeError('Error during get roles of user ' + user)
+
+        return [Role(**r) for r in response.json()]

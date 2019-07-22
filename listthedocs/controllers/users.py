@@ -74,9 +74,9 @@ def add_user_roles(user_name):
 
     json_data = request.get_json()
     if json_data is None:
-        return json_response(400, json={'message': 'Missing or invalid JSON data'})
+        return json_response(400, json={'message': 'Invalid JSON data'})
     if not isinstance(json_data, (list, tuple)):
-        return json_response(400, json={'message': 'Missing or invalid JSON data'})
+        return json_response(400, json={'message': 'Expected a list of JSON roles'})
 
     for json_role in json_data:
         if 'role_name' not in json_role:
