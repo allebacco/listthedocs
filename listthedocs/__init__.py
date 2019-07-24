@@ -2,7 +2,7 @@ import os
 
 from flask import Flask
 
-from .client import ListTheDocs, ListTheDocsAdmin
+from .client import ListTheDocs
 
 
 __version__ = '1.0.0'

@@ -1,7 +1,8 @@
 import attr
 
+from enum import Enum
 from datetime import datetime
-from typing import List
+from typing import List, Union
 
 from .datetime_utils import iso8601_to_datetime
 
@@ -24,6 +25,16 @@ def ListOf(element_type):
 
 def String():
     return attr.ib(type=str)
+
+
+def EnumString(enum: type):
+
+    def converter(value: Union[str, enum]) -> str:
+        if isinstance(value, str):
+            return value
+        return value.name
+
+    return attr.ib(type=str, converter=converter)
 
 
 def Bool():

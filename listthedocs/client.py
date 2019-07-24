@@ -7,7 +7,7 @@ from datetime import datetime
 from abc import ABC, abstractmethod, abstractstaticmethod
 from enum import Enum, unique
 
-from .attr_utils import ListOf, String, Bool, DateTime
+from .attr_utils import ListOf, String, Bool, DateTime, EnumString
 
 
 class Entity(ABC):
@@ -173,7 +173,7 @@ class Roles(Enum):
 @attr.s
 class Role:
 
-    role_name = String()
+    role_name = EnumString(Roles)
     project_name = String()
 
     def to_json(self) -> dict:
@@ -299,22 +299,6 @@ class ListTheDocs:
 
         return 'data:image/png;base64,' + base64.b64encode(data).decode('utf8')
 
-
-class ListTheDocsAdmin:
-    """ListTheDocs client for administration"""
-
-    def __init__(self, url: str='http://localhost:5000', api_key: str=None):
-        """Constructor.
-
-        Keyword Args:
-            url(str): The URL the service. Default 'localhost'
-            api_key(str): The API Key
-        """
-        self._base_url = url
-        self._session = requests.Session()
-        if api_key is not None:
-            self._session.headers['Api-Key'] = api_key
-
     def add_user(self, name, *, is_admin=False) -> User:
         endpoint_url = self._base_url + '/api/v1/users'
         response = self._session.post(endpoint_url, json={'name': name, 'is_admin': is_admin})
@@ -358,3 +342,13 @@ class ListTheDocsAdmin:
             raise RuntimeError('Error during get roles of user ' + user)
 
         return [Role(**r) for r in response.json()]
+
+    def remove_role(self, user: Union[str, User], role: Role):
+        if isinstance(user, User):
+            user = user.name
+        endpoint_url = self._base_url + '/api/v1/users/' + user + '/roles'
+
+        response = self._session.delete(endpoint_url, json=[role.to_json()])
+        if response.status_code != 200:
+            raise RuntimeError(response.json()['message'])
+
