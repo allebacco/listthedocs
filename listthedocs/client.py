@@ -1,6 +1,14 @@
-from abc import ABC, abstractmethod, abstractstaticmethod
 import requests
 import base64
+import attr
+
+from typing import List, Union
+from datetime import datetime
+from abc import ABC, abstractmethod, abstractstaticmethod
+from enum import Enum, unique
+
+from .attr_utils import ListOf, String, Bool, DateTime, EnumString
+
 
 class Entity(ABC):
     """Base entity object that can convert to a from JSON.
@@ -137,19 +145,68 @@ class Project(Entity):
         )
 
 
+@attr.s
+class ApiKey:
+
+    key = String()
+    is_valid = Bool()
+    created_at = DateTime()
+
+    def to_json(self) -> dict:
+        return attr.asdict(self)
+
+
+@unique
+class Roles(Enum):
+
+    UPDATE_PROJECT = 'UPDATE_PROJECT'
+    REMOVE_PROJECT = 'REMOVE_PROJECT'
+    ADD_VERSION = 'ADD_VERSION'
+    UPDATE_VERSION = 'UPDATE_VERSION'
+    REMOVE_VERSION = 'REMOVE_VERSION'
+
+    @staticmethod
+    def is_valid(name: str) -> bool:
+        return name in (e.name for e in Roles)
+
+
+@attr.s
+class Role:
+
+    role_name = EnumString(Roles)
+    project_name = String()
+
+    def to_json(self) -> dict:
+        return attr.asdict(self)
+
+
+@attr.s
+class User:
+
+    name = String()
+    is_admin = String()
+    created_at = DateTime()
+    api_keys = ListOf(ApiKey)
+
+    def to_json(self) -> dict:
+        return attr.asdict(self)
+
+
+
 class ListTheDocs:
     """ListTheDocs client"""
 
-    def __init__(self, host: str='localhost', port: int=5000, protocol: str='http'):
+    def __init__(self, url: str='http://localhost:5000', api_key: str=None):
         """Constructor.
 
         Keyword Args:
-            host(str): The hostname of the service. Default 'localhost'
-            port(int): The port of the service. Default 5000
-            protocol(str): The connection protocol ('http' or 'https')
+            url(str): The URL the service. Default 'localhost'
+            api_key(str): The API Key
         """
-        self._base_url = '{}://{}:{}'.format(protocol, host, port)
+        self._base_url = url
         self._session = requests.Session()
+        if api_key is not None:
+            self._session.headers['Api-Key'] = api_key
 
     def add_project(self, project: Project) -> Project:
         endpoint_url = self._base_url + '/api/v1/projects'
@@ -241,3 +298,57 @@ class ListTheDocs:
             data = f.read()
 
         return 'data:image/png;base64,' + base64.b64encode(data).decode('utf8')
+
+    def add_user(self, name, *, is_admin=False) -> User:
+        endpoint_url = self._base_url + '/api/v1/users'
+        response = self._session.post(endpoint_url, json={'name': name, 'is_admin': is_admin})
+        if response.status_code != 201:
+            raise RuntimeError('Error during adding user ' + name)
+
+        return User(**response.json())
+
+    def get_user(self, name) -> User:
+        endpoint_url = self._base_url + '/api/v1/users/' + name
+        response = self._session.get(endpoint_url)
+        if response.status_code != 200:
+            raise RuntimeError('Error during getting user ' + name)
+
+        return User(**response.json())
+
+    def get_users(self) -> List[User]:
+        endpoint_url = self._base_url + '/api/v1/users'
+        response = self._session.get(endpoint_url)
+        if response.status_code != 200:
+            raise RuntimeError('Error during getting users ')
+
+        return [User(**u) for u in response.json()]
+
+    def add_role(self, user: Union[str, User], role: Role):
+        if isinstance(user, User):
+            user = user.name
+        endpoint_url = self._base_url + '/api/v1/users/' + user + '/roles'
+
+        response = self._session.patch(endpoint_url, json=[role.to_json()])
+        if response.status_code != 200:
+            raise RuntimeError(response.json()['message'])
+
+    def get_roles(self, user: Union[str, User]) -> List[Role]:
+        if isinstance(user, User):
+            user = user.name
+        endpoint_url = self._base_url + '/api/v1/users/' + user + '/roles'
+
+        response = self._session.get(endpoint_url)
+        if response.status_code != 200:
+            raise RuntimeError('Error during get roles of user ' + user)
+
+        return [Role(**r) for r in response.json()]
+
+    def remove_role(self, user: Union[str, User], role: Role):
+        if isinstance(user, User):
+            user = user.name
+        endpoint_url = self._base_url + '/api/v1/users/' + user + '/roles'
+
+        response = self._session.delete(endpoint_url, json=[role.to_json()])
+        if response.status_code != 200:
+            raise RuntimeError(response.json()['message'])
+

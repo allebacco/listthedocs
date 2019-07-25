@@ -7,8 +7,8 @@ from .version import Version
 
 class Project(Entity):
 
-    def __init__(self, rowid: int, name: str, description: str, logo: str):
-        self.rowid = rowid
+    def __init__(self, id: int, name: str, description: str, logo: str):
+        self.id = id
         self.name = name
         self.description = description
         self.versions = list()

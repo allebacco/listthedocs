@@ -1,6 +1,44 @@
 import pytest
 
 
+ADMIN_HEADER = {'Api-Key': 'secret-key'}
+
+
+class AdminClient:
+
+    def __init__(self, flask_client):
+        self._client = flask_client
+
+    def get(self, url: str):
+        return self._client.get(url, headers=ADMIN_HEADER)
+
+    def post(self, url: str, *, json):
+        return self._client.post(url, json=json, headers=ADMIN_HEADER)
+
+    def patch(self, url: str, *, json):
+        return self._client.patch(url, json=json, headers=ADMIN_HEADER)
+
+    def delete(self, url: str):
+        return self._client.delete(url, headers=ADMIN_HEADER)
+
+
+@pytest.fixture
+def client(app):
+    return AdminClient(app.test_client())
+
+
+def add_permissions_on_project(client, project_name):
+    roles = [
+        {'role_name': 'UPDATE_PROJECT', 'project_name': project_name},
+        {'role_name': 'REMOVE_PROJECT', 'project_name': project_name},
+        {'role_name': 'ADD_VERSION', 'project_name': project_name},
+        {'role_name': 'UPDATE_VERSION', 'project_name': project_name},
+        {'role_name': 'REMOVE_VERSION', 'project_name': project_name},
+    ]
+    response = client.patch('/api/v1/users/root/roles', json=roles)
+    assert response.status_code == 200
+
+
 def test_get_missing_project(client):
 
     response = client.get('/api/v1/projects/test_project')
@@ -69,6 +107,7 @@ def test_update_project_description(client):
     response = client.post('/api/v1/projects', json={'name': 'test_project', 'description': 'A very long string'})
     assert response.status_code == 201
 
+    add_permissions_on_project(client, 'test_project')
     response = client.patch('/api/v1/projects/test_project', json={'description': 'Short string'})
     assert response.status_code == 200
 
@@ -85,6 +124,7 @@ def test_update_project_logo(client):
     response = client.post('/api/v1/projects', json={'name': 'test_project', 'description': 'A very long string'})
     assert response.status_code == 201
 
+    add_permissions_on_project(client, 'test_project')
     response = client.patch('/api/v1/projects/test_project', json={'logo': 'image.jpg'})
     assert response.status_code == 200
 
@@ -102,6 +142,8 @@ def test_delete_project(client):
     # Add a project
     response = client.post('/api/v1/projects', json={'name': 'test_project', 'description': 'A very long string'})
     assert response.status_code == 201
+
+    add_permissions_on_project(client, 'test_project')
 
     # Add a version
     response = client.post(
@@ -122,6 +164,7 @@ def test_add_version(client):
     response = client.post('/api/v1/projects', json={'name': 'test_project', 'description': 'A very long string'})
     assert response.status_code == 201
 
+    add_permissions_on_project(client, 'test_project')
     response = client.post(
         '/api/v1/projects/test_project/versions',
         json={'name': '1.0.0', 'url': 'www.example.com/index.html'}
@@ -144,6 +187,8 @@ def test_remove_version(client):
 
     response = client.post('/api/v1/projects', json={'name': 'test_project', 'description': 'A very long string'})
     assert response.status_code == 201
+
+    add_permissions_on_project(client, 'test_project')
 
     # Add multiple versions
     response = client.post(
@@ -182,6 +227,8 @@ def test_update_version_link(client):
 
     response = client.post('/api/v1/projects', json={'name': 'test_project', 'description': 'A very long string'})
     assert response.status_code == 201
+
+    add_permissions_on_project(client, 'test_project')
 
     # Add multiple versions
     response = client.post(
