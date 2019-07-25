@@ -6,7 +6,7 @@ from datetime import datetime
 from flask import current_app, g
 from flask.cli import with_appcontext
 
-from .entities import Project, Version, User, ApiKey, Role
+from .entities import Project, Version, User, ApiKey, Role, db
 
 
 def get_db():
@@ -86,14 +86,16 @@ def init_db():
 
 def init_root_user():
 
-    root_user = get_user_by_name('root')
+    root_user = User.query.filter_by(name='root').first()
     if root_user is not None:
         return
 
     key = current_app.config['ROOT_API_KEY']
-    user = User('root', True, datetime.utcnow())
-    api_key = ApiKey(key, True, user.created_at)
-    add_user_with_api_key(user, api_key)
+
+    root_user = User(name='root', is_admin=True)
+    root_user.api_keys.append(ApiKey(key=key, is_valid=True))
+    db.session.add(root_user)
+    db.session.commit()
 
 
 def init_app(app):
@@ -256,38 +258,15 @@ def update_version(project_name: str, version_name: str, new_url: str=None):
     return True
 
 
-def add_user_with_api_key(user: User, api_key: ApiKey) -> User:
+def add_user(user: User) -> User:
 
-    db = get_db()
-    cursor = db.execute(
-        'INSERT INTO users(name, is_admin, created_at) VALUES(?,?,?)',
-        (user.name, user.is_admin, user.created_at.isoformat())
-    )
-    user_id = cursor.lastrowid
-    db.execute(
-        'INSERT INTO api_keys(key, is_valid, created_at, user_id) VALUES(?,?,?,?)',
-        (api_key.key, api_key.is_valid, api_key.created_at.isoformat(), user_id)
-    )
-    db.commit()
-
-    return get_user_by_name(user.name)
+    db.session.add(user)
+    db.session.commit()
+    return user
 
 
 def get_user_by_name(name: str) -> User:
-
-    db = get_db()
-    cursor = db.execute(
-        'SELECT id, name, is_admin, created_at FROM users WHERE name = ?', [name]
-    )
-    row = cursor.fetchone()
-    if row is None:
-        return None
-
-    created_at = datetime.strptime(row[3], "%Y-%m-%dT%H:%M:%S.%f")
-    user = User(row[1], row[2] != 0, created_at, id=row[0])
-    user.api_keys = get_api_keys_for_user(name)
-
-    return user
+    return User.query.filter_by(name=name).first()
 
 
 def get_api_keys_for_user(name: str) -> 'list[ApiKey]':
@@ -312,6 +291,8 @@ def get_api_keys_for_user(name: str) -> 'list[ApiKey]':
 
 def get_users() -> User:
 
+    return User.query.all()
+
     users = list()
 
     db = get_db()
@@ -327,22 +308,11 @@ def get_users() -> User:
 
 def get_user_for_api_key(api_key: str) -> User:
 
-    db = get_db()
-    cursor = db.execute('''
-        SELECT users.id, users.name, users.is_admin, users.created_at
-        FROM users
-        LEFT JOIN api_keys ON api_keys.id = users.id
-        WHERE api_keys.key = ? AND api_keys.is_valid = 1
-        ''', [api_key]
-    )
-    row = cursor.fetchone()
-    if row is None:
+    key = ApiKey.query.filter_by(key=api_key).first()
+    if key is None:
         return None
 
-    created_at = datetime.strptime(row[3], "%Y-%m-%dT%H:%M:%S.%f")
-    user = User(row[1], row[2] != 0, created_at, id=row[0])
-
-    return user
+    return key.user
 
 
 def get_roles_for_user(name) -> 'list[Role]':

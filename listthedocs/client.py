@@ -187,6 +187,7 @@ class User:
     is_admin = String()
     created_at = DateTime()
     api_keys = ListOf(ApiKey)
+    roles = ListOf(Role)
 
     def to_json(self) -> dict:
         return attr.asdict(self)

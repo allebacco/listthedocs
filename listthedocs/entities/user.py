@@ -1,24 +1,10 @@
+import secrets
+
 from datetime import datetime
 from abc import abstractmethod
 from enum import Enum, unique
 
-from .entity import Entity
-
-
-class ApiKey(Entity):
-
-    def __init__(self, key: str, is_valid: bool, created_at: datetime, id=None):
-        self.id = id
-        self.key = key
-        self.is_valid = is_valid
-        self.created_at = created_at
-
-    def to_json(self) -> dict:
-        return {
-            'key': self.key,
-            'is_valid': self.is_valid,
-            'created_at': self.created_at.isoformat(),
-        }
+from .entity import Entity, db
 
 
 @unique
@@ -35,30 +21,63 @@ class Roles(Enum):
         return name in (e.name for e in Roles)
 
 
-class Role(Entity):
+class User(db.Model, Entity):
 
-    def __init__(self, name: str, project: str, id: int):
-        self.id = id
-        self.name = name
-        self.project = project
+    __tablename__ = 'users'
 
-    def to_json(self) -> dict:
-        return {'role_name': self.name, 'project_name': self.project}
-
-
-class User(Entity):
-
-    def __init__(self, name: str, is_admin: bool, created_at: datetime, id: int=None):
-        self.id = id
-        self.name = name
-        self.is_admin = is_admin
-        self.created_at = created_at
-        self.api_keys = tuple()
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(), nullable=False, unique=True)
+    is_admin = db.Column(db.Boolean, nullable=False, default=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     def to_json(self) -> dict:
         return {
             'name': self.name,
             'is_admin': self.is_admin,
             'created_at': self.created_at.isoformat(),
-            'api_keys': [k.to_json() for k in self.api_keys]
+            'api_keys': [k.to_json() for k in self.api_keys],
+            'roles': [r.to_json() for r in self.roles]
+        }
+
+
+class ApiKey(db.Model, Entity):
+
+    __tablename__ = 'api_keys'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    key = db.Column(db.String(), unique=True, nullable=False, default=secrets.token_urlsafe)
+    is_valid = db.Column(db.Boolean, nullable=False, default=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    user = db.relationship(User, backref=db.backref('api_keys', uselist=True, cascade='delete,all'))
+
+    def to_json(self) -> dict:
+        return {
+            'key': self.key,
+            'is_valid': self.is_valid,
+            'created_at': self.created_at.isoformat(),
+        }
+
+
+class Role(db.Model, Entity):
+
+    __tablename__ = 'roles'
+    __table_args__ = (
+        db.UniqueConstraint('name', 'project', name='role_on_project'),
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    name = db.Column(db.String(), nullable=False)
+    project = db.Column(db.String(), nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    user = db.relationship(User, backref=db.backref('roles', uselist=True, cascade='delete,all'))
+
+    def to_json(self) -> dict:
+        return {
+            'role_name': self.name,
+            'project_name': self.project,
+            'created_at': self.created_at.isoformat()
         }

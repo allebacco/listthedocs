@@ -12,10 +12,12 @@ def app():
     """Create and configure a new app instance for each test."""
     # create a temporary file to isolate the database for each test
     db_fd, db_path = tempfile.mkstemp()
+    db_fd2, db_path2 = tempfile.mkstemp()
     # create the app with common test config
     app = create_app({
         'TESTING': True,
         'DATABASE': db_path,
+        'SQLALCHEMY_DATABASE_URI': 'sqlite:///' + db_path2,
         'ROOT_API_KEY': 'secret-key',
     })
 

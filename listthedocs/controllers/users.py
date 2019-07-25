@@ -25,10 +25,10 @@ def add_user():
 
     name = json_data['name']
     is_admin = json_data.get('is_admin', False)
-    created_at = datetime.utcnow()
-    user = User(name, is_admin, created_at)
-    api_key = ApiKey(generate_api_key(), True, created_at)
-    user = database.add_user_with_api_key(user, api_key)
+
+    user = User(name=name, is_admin=is_admin)
+    user.api_keys.append(ApiKey())
+    user = database.add_user(user)
 
     if user is not None:
         return json_response(201, json=user)
