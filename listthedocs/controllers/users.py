@@ -59,8 +59,7 @@ def get_user_roles(name):
     if user is None:
         return json_response(404, json={'message': 'User ' + name + ' does not exists'})
 
-    roles = database.get_roles_for_user(user.name)
-    return json_response(200, json=roles)
+    return json_response(200, json=user.roles)
 
 
 @users_apis.route('/api/v1/users/<user_name>/roles', methods=['PATCH'])

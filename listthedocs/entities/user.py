@@ -50,7 +50,7 @@ class ApiKey(db.Model, Entity):
     is_valid = db.Column(db.Boolean, nullable=False, default=True)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
-    user = db.relationship(User, backref=db.backref('api_keys', uselist=True, cascade='delete,all'))
+    user = db.relationship(User, backref=db.backref('api_keys', uselist=True, cascade='delete,all,delete-orphan'))
 
     def to_json(self) -> dict:
         return {
@@ -73,7 +73,7 @@ class Role(db.Model, Entity):
     project = db.Column(db.String(), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
-    user = db.relationship(User, backref=db.backref('roles', uselist=True, cascade='delete,all'))
+    user = db.relationship(User, backref=db.backref('roles', uselist=True, cascade='delete,all,delete-orphan'))
 
     def to_json(self) -> dict:
         return {

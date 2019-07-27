@@ -26,6 +26,8 @@ def app():
     # close and remove the temporary database
     os.close(db_fd)
     os.unlink(db_path)
+    os.close(db_fd2)
+    os.unlink(db_path2)
 
 
 @pytest.fixture

@@ -2,6 +2,7 @@ import os
 import sqlite3
 import click
 
+from typing import List
 from datetime import datetime
 from flask import current_app, g
 from flask.cli import with_appcontext
@@ -269,41 +270,9 @@ def get_user_by_name(name: str) -> User:
     return User.query.filter_by(name=name).first()
 
 
-def get_api_keys_for_user(name: str) -> 'list[ApiKey]':
-
-    db = get_db()
-    cursor = db.execute('''
-        SELECT api_keys.id, api_keys.key, api_keys.is_valid, api_keys.created_at
-        FROM api_keys
-        LEFT JOIN users ON api_keys.id = users.id
-        WHERE users.name = ?
-        ''', [name]
-    )
-
-    api_keys = list()
-    for row in cursor:
-        created_at = datetime.strptime(row[3], "%Y-%m-%dT%H:%M:%S.%f")
-        api_key = ApiKey(row[1], row[2] != 0, created_at, id=row[0])
-        api_keys.append(api_key)
-
-    return api_keys
-
-
 def get_users() -> User:
 
     return User.query.all()
-
-    users = list()
-
-    db = get_db()
-    cursor = db.execute('SELECT id, name, is_admin, created_at FROM users')
-    for row in cursor:
-        created_at = datetime.strptime(row[3], "%Y-%m-%dT%H:%M:%S.%f")
-        user = User(row[1], row[2] != 0, created_at, id=row[0])
-        user.api_keys = get_api_keys_for_user(user.name)
-        users.append(user)
-
-    return users
 
 
 def get_user_for_api_key(api_key: str) -> User:
@@ -315,25 +284,6 @@ def get_user_for_api_key(api_key: str) -> User:
     return key.user
 
 
-def get_roles_for_user(name) -> 'list[Role]':
-
-    roles = list()
-    db = get_db()
-    cursor = db.execute('''
-        SELECT roles.name, projects.name, roles.id
-        FROM roles
-        LEFT JOIN users ON roles.id = roles.id
-        LEFT JOIN projects ON projects.id = roles.project_id
-        WHERE users.name = ?
-        ''', [name]
-    )
-    for row in cursor:
-        role = Role(row[0], row[1], row[2])
-        roles.append(role)
-
-    return roles
-
-
 def add_role_to_user(user_name, role_name, project_name):
 
     user = get_user_by_name(user_name)
@@ -343,14 +293,8 @@ def add_role_to_user(user_name, role_name, project_name):
     if project is None:
         return False
 
-    created_at = datetime.utcnow().isoformat()
-
-    db = get_db()
-    db.execute(
-        'INSERT OR IGNORE INTO roles(name, project_id, user_id, created_at) VALUES(?,?,?,?)',
-        [role_name, project.id, user.id, created_at]
-    )
-    db.commit()
+    user.roles.append(Role(name=role_name, project=project_name))
+    db.session.commit()
 
     return True
 
@@ -360,18 +304,14 @@ def remove_role_from_user(user_name, role_name, project_name):
     user = get_user_by_name(user_name)
     if user is None:
         return False
-    project = get_project(project_name)
-    if project is None:
-        return False
 
-    db = get_db()
-    db.execute(
-        'DELETE FROM roles WHERE name=? AND project_id=? AND user_id=?',
-        [role_name, project.id, user.id]
-    )
-    db.commit()
+    for role in user.roles:
+        if role.name == role_name and role.project == project_name:
+            user.roles.remove(role)
+            db.session.commit()
+            return True
 
-    return True
+    return False
 
 
 def check_user_has_role(user_name, role_name, project_name) -> bool:
@@ -379,16 +319,9 @@ def check_user_has_role(user_name, role_name, project_name) -> bool:
     user = get_user_by_name(user_name)
     if user is None:
         return False
-    project = get_project(project_name)
-    if project is None:
-        return False
 
-    db = get_db()
-    cursor = db.execute(
-        'SELECT count(*) FROM roles WHERE name=? AND project_id=? AND user_id=?',
-        [role_name, project.id, user.id]
-    )
-    count = cursor.fetchone()[0]
-    db.commit()
+    for role in user.roles:
+        if role.name == role_name and role.project == project_name:
+            return True
 
-    return count == 1
+    return False

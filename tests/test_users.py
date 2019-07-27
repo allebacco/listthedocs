@@ -86,7 +86,7 @@ def test_add_and_remove_user_roles(client):
     )
     assert response.status_code == 201
 
-    new_roles = [
+    roles_to_add = [
         {
             'role_name': 'ADD_VERSION',
             'project_name': 'test_project1'
@@ -110,7 +110,19 @@ def test_add_and_remove_user_roles(client):
     ]
     response = client.patch(
         '/api/v1/users/new_user/roles',
-        json=new_roles + [{'role_name': 'ADD_VERSION', 'project_name': 'test_project2'}],
+        json=roles_to_add,
+        headers=ADMIN_HEADER
+    )
+    assert response.status_code == 200
+
+    response = client.get('/api/v1/users/new_user/roles', headers=ADMIN_HEADER)
+    assert response.status_code == 200
+    roles = response.get_json()
+    assert len(roles) == len(roles_to_add)
+
+    response = client.patch(
+        '/api/v1/users/new_user/roles',
+        json=[{'role_name': 'ADD_VERSION', 'project_name': 'test_project2'}],
         headers=ADMIN_HEADER
     )
     assert response.status_code == 200
@@ -126,5 +138,4 @@ def test_add_and_remove_user_roles(client):
     assert response.status_code == 200
 
     roles = response.get_json()
-    assert set(HashableDict(d) for d in roles) == set(HashableDict(d) for d in new_roles)
-    assert len(roles) == len(new_roles)
+    assert len(roles) == len(roles_to_add)

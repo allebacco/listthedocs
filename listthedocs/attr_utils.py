@@ -41,7 +41,7 @@ def Bool():
     return attr.ib(type=bool)
 
 
-def DateTime():
-    return attr.ib(type=datetime, converter=iso8601_to_datetime)
+def DateTime(default=attr.NOTHING):
+    return attr.ib(type=datetime, converter=iso8601_to_datetime, default=default)
 
 
