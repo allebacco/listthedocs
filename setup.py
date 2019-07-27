@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='listthedocs',
-    version='1.0.0',
+    version='2.0.0',
     description='List your documentations',
     author='Alessandro Bacchini',
     author_email='allebacco@gmail.com',
@@ -14,6 +14,7 @@ setup(
         'requests',
         'attrs',
         'python-dateutil',
+        'Flask-SQLAlchemy',
     ],
     tests_require=[
         'pytest'
