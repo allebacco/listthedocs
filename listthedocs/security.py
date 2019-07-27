@@ -94,4 +94,3 @@ def has_role(role: Roles, project_name: str) -> bool:
         return True
 
     return database.check_user_has_role(current_user.name, role.value, project_name)
-

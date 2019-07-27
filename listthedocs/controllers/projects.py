@@ -70,10 +70,9 @@ def update_project(project_name):
     if len(kwargs) == 0:
         return json_response(400, json={'message': 'No field to update'})
 
-    ok = database.update_project(project_name, **kwargs)
+    project = database.update_project(project_name, **kwargs)
 
-    if ok:
-        project = database.get_project(project_name)
+    if project is not None:
         return json_response(200, json=project)
 
     return json_response(500, json={'message': 'Error during updating project ' + project_name})
@@ -110,14 +109,13 @@ def add_version(project_name):
 
     url = json_data['url']
     version_name = json_data['name']
-    ok = database.add_version(project_name, Version(version_name, url))
-    if not ok:
+    project = database.add_version(project_name, Version(version_name, url))
+    if project is None:
         return json_response(
             500,
             json={'message': 'Error during adding version {} to project {}'.format(version_name, project_name)}
         )
 
-    project = database.get_project(project_name)
     return json_response(201, json=project)
 
 

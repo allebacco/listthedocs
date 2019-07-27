@@ -1,10 +1,7 @@
-import os
-import sqlite3
-import click
 
 from typing import List
 from datetime import datetime
-from flask import current_app, g
+from flask import current_app
 from flask.cli import with_appcontext
 
 from .entities import Project, Version, User, ApiKey, Role, db
@@ -83,16 +80,16 @@ def delete_project(name: str):
     return True
 
 
-def add_version(project_name: str, version: Version):
+def add_version(project_name: str, version: Version) -> Project:
 
     project = get_project(project_name)
     if project is None:
-        return False
+        return None
 
     project.versions.append(version)
     db.session.commit()
 
-    return True
+    return project
 
 
 def remove_version(project_name: str, version_name: str):

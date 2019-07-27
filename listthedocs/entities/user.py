@@ -1,4 +1,15 @@
-import secrets
+
+try:
+    import secrets
+
+    def generate_token():
+        return secrets.token_urlsafe()
+
+except ImportError:
+    import uuid
+
+    def generate_token():
+        return uuid.uuid4()
 
 from datetime import datetime
 from abc import abstractmethod
@@ -47,7 +58,7 @@ class ApiKey(db.Model, Entity):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    key = db.Column(db.String(), unique=True, nullable=False, default=secrets.token_urlsafe)
+    key = db.Column(db.String(), unique=True, nullable=False, default=generate_token)
     is_valid = db.Column(db.Boolean, nullable=False, default=True)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
