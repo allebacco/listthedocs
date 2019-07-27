@@ -1,10 +1,14 @@
 from abc import ABC, abstractmethod
 
+from flask_sqlalchemy import SQLAlchemy
 
-class Entity(ABC):
+
+db = SQLAlchemy()
+
+
+class Entity:
     """The base entity class that can convert to a JSON object
     """
 
-    @abstractmethod
     def to_json(self) -> dict:
-        pass
+        raise NotImplementedError()

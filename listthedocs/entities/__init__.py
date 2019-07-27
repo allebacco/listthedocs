@@ -1,5 +1,4 @@
 
-from .entity import Entity
-from .version import Version
-from .project import Project
+from .entity import Entity, db
+from .project import Project, Version
 from .user import User, ApiKey, Role, Roles

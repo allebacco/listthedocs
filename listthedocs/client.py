@@ -175,6 +175,7 @@ class Role:
 
     role_name = EnumString(Roles)
     project_name = String()
+    created_at = DateTime(default=None)
 
     def to_json(self) -> dict:
         return attr.asdict(self)
@@ -185,8 +186,9 @@ class User:
 
     name = String()
     is_admin = String()
-    created_at = DateTime()
     api_keys = ListOf(ApiKey)
+    roles = ListOf(Role)
+    created_at = DateTime(default=None)
 
     def to_json(self) -> dict:
         return attr.asdict(self)

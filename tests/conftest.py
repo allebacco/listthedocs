@@ -4,7 +4,6 @@ import tempfile
 import pytest
 
 from listthedocs import create_app
-from listthedocs.database import get_db, init_db
 
 
 @pytest.fixture
@@ -15,7 +14,7 @@ def app():
     # create the app with common test config
     app = create_app({
         'TESTING': True,
-        'DATABASE': db_path,
+        'DATABASE_URI': 'sqlite:///' + db_path,
         'ROOT_API_KEY': 'secret-key',
     })
 

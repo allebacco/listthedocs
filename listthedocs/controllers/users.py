@@ -25,10 +25,10 @@ def add_user():
 
     name = json_data['name']
     is_admin = json_data.get('is_admin', False)
-    created_at = datetime.utcnow()
-    user = User(name, is_admin, created_at)
-    api_key = ApiKey(generate_api_key(), True, created_at)
-    user = database.add_user_with_api_key(user, api_key)
+
+    user = User(name=name, is_admin=is_admin)
+    user.api_keys.append(ApiKey())
+    user = database.add_user(user)
 
     if user is not None:
         return json_response(201, json=user)
@@ -59,8 +59,7 @@ def get_user_roles(name):
     if user is None:
         return json_response(404, json={'message': 'User ' + name + ' does not exists'})
 
-    roles = database.get_roles_for_user(user.name)
-    return json_response(200, json=roles)
+    return json_response(200, json=user.roles)
 
 
 @users_apis.route('/api/v1/users/<user_name>/roles', methods=['PATCH'])
