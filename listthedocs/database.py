@@ -10,81 +10,6 @@ from flask.cli import with_appcontext
 from .entities import Project, Version, User, ApiKey, Role, db
 
 
-def get_db():
-    """Connect to the application's configured database. The connection
-    is unique for each request and will be reused if this is called
-    again.
-    """
-    if 'db' not in g:
-        g.db = sqlite3.connect(
-            current_app.config['DATABASE'],
-            detect_types=sqlite3.PARSE_DECLTYPES
-        )
-        g.db.row_factory = sqlite3.Row
-
-    return g.db
-
-
-def close_db(e=None):
-    """If this request connected to the database, close the
-    connection.
-    """
-    db = g.pop('db', None)
-
-    if db is not None:
-        db.close()
-
-
-def init_db():
-
-    db = get_db()
-
-    db.executescript("""
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY ASC,
-            name TEXT NOT NULL UNIQUE,
-            is_admin INTEGER NOT NULL DEFAULT 0,
-            created_at TEXT NOT NULL
-        );
-
-        CREATE TABLE IF NOT EXISTS api_keys (
-            id INTEGER PRIMARY KEY ASC,
-            key TEXT NOT NULL UNIQUE,
-            is_valid INTEGER NOT NULL DEFAULT 1,
-            created_at TEXT NOT NULL,
-            user_id INTEGER NOT NULL,
-            FOREIGN KEY(user_id) REFERENCES users(id)
-        );
-
-        CREATE TABLE IF NOT EXISTS projects (
-            id INTEGER PRIMARY KEY ASC,
-            name TEXT NOT NULL UNIQUE,
-            description TEXT NOT NULL,
-            logo TEXT DEFAULT NULL
-        );
-
-        CREATE TABLE IF NOT EXISTS versions (
-            id INTEGER PRIMARY KEY ASC,
-            project_id INTEGER NOT NULL,
-            name TEXT NOT NULL,
-            url TEXT NOT NULL,
-            UNIQUE(project_id, name),
-            FOREIGN KEY(project_id) REFERENCES projects(id)
-        );
-
-        CREATE TABLE IF NOT EXISTS roles (
-            id INTEGER PRIMARY KEY ASC,
-            name TEXT NOT NULL,
-            project_id INTEGER NOT NULL,
-            user_id INTEGER NOT NULL,
-            created_at TEXT NOT NULL,
-            UNIQUE(name, project_id, user_id),
-            FOREIGN KEY(project_id) REFERENCES projects(id),
-            FOREIGN KEY(user_id) REFERENCES users(id)
-        );
-    """)
-
-
 def init_root_user():
 
     root_user = User.query.filter_by(name='root').first()
@@ -103,158 +28,99 @@ def init_app(app):
     """Register database functions with the Flask app. This is called by
     the application factory.
     """
-    app.teardown_appcontext(close_db)
 
+    db.init_app(app)
+    db.create_all(app=app)
     with app.app_context():
-        init_db()
         init_root_user()
 
 
 def add_project(name: str, description: str, logo: str) -> Project:
 
-    db = get_db()
-    db.execute('INSERT INTO projects(name, description, logo) VALUES(?,?,?)', (name, description, logo))
-    db.commit()
-
-    return get_project(name)
-
-
-def get_projects():
-
-    projects = list()
-
-    db = get_db()
-    cursor = db.execute('SELECT id, name, description, logo FROM projects ORDER BY id ASC')
-    for row in cursor.fetchall():
-        projects.append(Project(row[0], row[1], row[2], row[3]))
-
-    for project in projects:
-        cursor = db.execute('SELECT name, url FROM versions WHERE project_id=?', [project.id])
-        versions = list()
-        for row in cursor.fetchall():
-            versions.append(Version(row[0], row[1]))
-        project.add_versions(versions)
-
-    return projects
-
-
-def get_project(name: str) -> Project:
-
-    project = None
-    db = get_db()
-    cursor = db.execute('SELECT id, name, description, logo FROM projects WHERE name = ?', [name])
-    row = cursor.fetchone()
-    if row is None:
-        return None
-
-    project = Project(row[0], row[1], row[2], row[3])
-    cursor = db.execute('SELECT name, url FROM versions WHERE project_id=?', [project.id])
-    versions = list()
-    for row in cursor.fetchall():
-        versions.append(Version(row[0], row[1]))
-    project.add_versions(versions)
+    project = Project(name=name, description=description, logo=logo)
+    db.session.add(project)
+    db.session.commit()
 
     return project
 
 
-def update_project(project_name: str, description: str=None, logo: str=None):
+def get_projects():
 
-    db = get_db()
-    cursor = db.execute('SELECT id FROM projects WHERE name=?', [project_name])
-    row = cursor.fetchone()
-    if row is None:
-        return False
+    return Project.query.all()
 
-    project_id = row[0]
+
+def get_project(name: str) -> Project:
+
+    return Project.query.filter_by(name=name).first()
+
+
+def update_project(name: str, description: str=None, logo: str=None) -> Project:
+
+    project = get_project(name)
+    if project is None:
+        return None
 
     if description is not None:
-        db.execute(
-            'UPDATE projects SET description = ? WHERE id = ?',
-            [description, project_id]
-        )
+        project.description = description
 
     if logo is not None:
-        db.execute(
-            'UPDATE projects SET logo = ? WHERE id = ?',
-            [logo, project_id]
-        )
+        project.logo = logo
 
-    db.commit()
+    db.session.commit()
 
-    return True
+    return project
 
 
-def delete_project(project_name):
+def delete_project(name: str):
 
-    db = get_db()
-    cursor = db.execute('SELECT id FROM projects WHERE name=?', [project_name])
-    row = cursor.fetchone()
-    if row is None:
+    project = get_project(name)
+    if project is None:
         return True
 
-    project_id = row[0]
-
-    db.execute('DELETE FROM versions WHERE project_id=?', [project_id])
-    db.execute('DELETE FROM projects WHERE id=?', [project_id])
-    db.commit()
+    db.session.delete(project)
+    db.session.commit()
 
     return True
 
 
-def add_version(project: str, version: Version):
+def add_version(project_name: str, version: Version):
 
-    db = get_db()
-    cursor = db.execute('SELECT id FROM projects WHERE name=?', [project])
-    row = cursor.fetchone()
-    if row is None:
+    project = get_project(project_name)
+    if project is None:
         return False
 
-    project_id = row[0]
-
-    db.execute(
-        'INSERT OR REPLACE INTO versions(project_id, name, url) VALUES(?,?,?)',
-        (project_id, version.name, version.url)
-    )
-    db.commit()
+    project.versions.append(version)
+    db.session.commit()
 
     return True
 
 
 def remove_version(project_name: str, version_name: str):
 
-    db = get_db()
-    cursor = db.execute('SELECT id FROM projects WHERE name=?', [project_name])
-    row = cursor.fetchone()
-    if row is None:
+    project = get_project(project_name)
+    if project is None:
         return False
 
-    project_id = row[0]
+    version = project.get_version(version_name)
 
-    db.execute(
-        'DELETE FROM versions WHERE project_id=? AND name=?', (project_id, version_name)
-    )
-    db.commit()
+    db.session.delete(version)
+    db.session.commit()
 
     return True
 
 
 def update_version(project_name: str, version_name: str, new_url: str=None):
 
-    db = get_db()
-    cursor = db.execute('SELECT id FROM projects WHERE name=?', [project_name])
-    row = cursor.fetchone()
-    if row is None:
+    project = get_project(project_name)
+    if project is None:
         return False
 
-    project_id = row[0]
+    version = project.get_version(version_name)
 
     if new_url is not None:
-        db.execute(
-            'UPDATE versions SET url=? WHERE project_id=? AND name=?',
-            (new_url, project_id, version_name)
-        )
+        version.url = new_url
 
-    db.commit()
+    db.session.commit()
 
     return True
 

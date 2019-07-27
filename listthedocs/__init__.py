@@ -15,8 +15,8 @@ def create_app(override_config: dict=None):
     app = Flask(__name__, instance_relative_config=True, instance_path=instance_path)
     app.config.from_mapping(
         # store the database in the instance folder
-        DATABASE=os.path.join(app.instance_path, 'listthedocs.sqlite'),
-        SQLALCHEMY_DATABASE_URI='sqlite:///' + os.path.join(app.instance_path, 'listthedocs_alchemy.sqlite'),
+        DATABASE_URI='sqlite:///' + os.path.join(app.instance_path, 'listthedocs_alchemy.sqlite'),
+        SQLALCHEMY_TRACK_MODIFICATIONS=False,
         ROOT_API_KEY='ROOT-API-KEY',
         LOGIN_DISABLED=False,
 
@@ -30,6 +30,9 @@ def create_app(override_config: dict=None):
     if override_config is not None:
         app.config.update(override_config)
 
+
+    app.config['SQLALCHEMY_DATABASE_URI'] = app.config['DATABASE_URI']
+
     # ensure the instance folder exists
     try:
         os.makedirs(app.instance_path)
@@ -37,10 +40,6 @@ def create_app(override_config: dict=None):
         pass
 
     # Initialize database
-    from .entities import db
-    db.init_app(app)
-    db.create_all(app=app)
-
     from . import database
     database.init_app(app)
 

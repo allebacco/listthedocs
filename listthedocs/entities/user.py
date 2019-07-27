@@ -5,6 +5,7 @@ from abc import abstractmethod
 from enum import Enum, unique
 
 from .entity import Entity, db
+from .project import Project
 
 
 @unique
