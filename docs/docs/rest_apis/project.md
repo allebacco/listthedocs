@@ -1,8 +1,9 @@
-# Rest APIs
+# Project Management
 
-List The Docs provides a set of REST APIs to manage the projects and the docuemntation versions.
+List The Docs provides a set of REST APIs to manage the projects and the documentation versions.
 
-Currently there is no authorization control, so anybody can interact with these APIs.
+The GET requests are not behind access control, while POST, PATCH and DELETE requests
+require an API-Key to validate the user that make the request.
 
 ## Project
 
@@ -13,6 +14,7 @@ The following call will add a project:
 ``` http
 POST /api/v1/projects HTTP/1.1
 Content-Type: application/json
+Api-Key: f9bf78b9a18ce6d46a0cd2b0b86df9da
 
 {
     "name": "Project-Name",
@@ -105,6 +107,7 @@ call:
 ``` http
 PATCH /api/v1/projects/Project-Name HTTP/1.1
 Content-Type: application/json
+Api-Key: f9bf78b9a18ce6d46a0cd2b0b86df9da
 
 {
     "description": "An optional new description",
@@ -134,6 +137,7 @@ It is possible to remove a Project (and all its versions) using the following ca
 
 ``` http
 DELETE /api/v1/projects/Project-Name HTTP/1.1
+Api-Key: f9bf78b9a18ce6d46a0cd2b0b86df9da
 ```
 
 The response has the following format:
@@ -152,6 +156,7 @@ project:
 ``` http
 POST /api/v1/projects/Project-Name/versions HTTP/1.1
 Content-Type: application/json
+Api-Key: f9bf78b9a18ce6d46a0cd2b0b86df9da
 
 {
     "name": "1.0.0",
@@ -197,6 +202,7 @@ The following call will update the documentation URL:
 ``` http
 PATCH /api/v1/projects/Project-Name/versions/1.0.0 HTTP/1.1
 Content-Type: application/json
+Api-Key: f9bf78b9a18ce6d46a0cd2b0b86df9da
 
 {
     "url": "https://www.projectname.com/doc/1.0.0/"
@@ -228,6 +234,7 @@ It is possible to remove a Version from a Project using the following call:
 
 ``` http
 DELETE /api/v1/projects/Project-Name/versions/1.0.0 HTTP/1.1
+Api-Key: f9bf78b9a18ce6d46a0cd2b0b86df9da
 ```
 
 The response has the following format:

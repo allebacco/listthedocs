@@ -9,12 +9,14 @@ theme:
     accent: 'indigo'
 
 nav:
-    - Home: index.md
-    - Getting Started: getting_started.md
-    - REST APIs: rest_api.md
-    - Python Client: python_client.md
-    - About:
-      - License: about/license.md
+  - Home: index.md
+  - Getting Started: getting_started.md
+  - REST APIs:
+      Projects: rest_apis/project.md
+      Users: rest_apis/user.md
+  - Python Client: python_client.md
+  - About:
+    - License: about/license.md
 
 markdown_extensions:
   - codehilite
