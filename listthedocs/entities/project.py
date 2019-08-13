@@ -47,11 +47,14 @@ class Project(db.Model, Entity):
 class Version(db.Model, Entity):
 
     __tablename__ = 'versions'
+    __table_args__ = (
+        db.UniqueConstraint('project_id', 'name', name='project_version_name_unique'),
+    )
 
     id = db.Column(db.Integer, primary_key=True)
     project_id = db.Column(db.Integer, db.ForeignKey('projects.id'))
-    name = db.Column(db.String(), nullable=False, unique=True)
-    url = db.Column(db.String(), nullable=False, unique=False)
+    name = db.Column(db.String(), nullable=False)
+    url = db.Column(db.String(), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     projects = db.relationship(Project, backref=db.backref('versions', uselist=True, cascade='delete,all,delete-orphan'))

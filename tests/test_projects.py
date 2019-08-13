@@ -262,3 +262,51 @@ def test_update_version_link(client):
     assert project['versions'][0]['url'] == 'www.example.com/1.0.0/index.html'
     assert project['versions'][1]['name'] == '2.0.0'
     assert project['versions'][1]['url'] == 'www.newexample.com/2.0.0/index.html'
+
+
+def test_add_same_version_name_to_different_projects(client):
+
+    response = client.post('/api/v1/projects', json={'name': 'test_project1', 'description': 'A very long string'})
+    assert response.status_code == 201
+
+    response = client.post('/api/v1/projects', json={'name': 'test_project2', 'description': 'A very long string'})
+    assert response.status_code == 201
+
+    add_permissions_on_project(client, 'test_project1')
+    add_permissions_on_project(client, 'test_project2')
+
+    # Add version 1.0.0 to test_project1
+    response = client.post(
+        '/api/v1/projects/test_project1/versions',
+        json={'name': '1.0.0', 'url': 'www.example.com/1.0.0/index.html'}
+    )
+    assert response.status_code == 201
+
+    # Add version 1.0.0 to test_project2
+    response = client.post(
+        '/api/v1/projects/test_project2/versions',
+        json={'name': '1.0.0', 'url': 'www.example.com/1.0.0/index.html'}
+    )
+    assert response.status_code == 201
+
+
+def test_add_same_version_name_multiple_time_to_project_fails(client):
+
+    response = client.post('/api/v1/projects', json={'name': 'test_project1', 'description': 'A very long string'})
+    assert response.status_code == 201
+
+    add_permissions_on_project(client, 'test_project1')
+
+    # Add version 1.0.0 to test_project1
+    response = client.post(
+        '/api/v1/projects/test_project1/versions',
+        json={'name': '1.0.0', 'url': 'www.example.com/1.0.0/index.html'}
+    )
+    assert response.status_code == 201
+
+    # Add version 1.0.0 to test_project1 twice, fail
+    response = client.post(
+        '/api/v1/projects/test_project1/versions',
+        json={'name': '1.0.0', 'url': 'www.example.com/1.0.0/index.html'}
+    )
+    assert response.status_code == 400

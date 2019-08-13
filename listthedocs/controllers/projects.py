@@ -112,7 +112,7 @@ def add_version(project_name):
     project = database.add_version(project_name, Version(version_name, url))
     if project is None:
         return json_response(
-            500,
+            400,
             json={'message': 'Error during adding version {} to project {}'.format(version_name, project_name)}
         )
 

@@ -3,6 +3,7 @@ from typing import List
 from datetime import datetime
 from flask import current_app
 from flask.cli import with_appcontext
+from sqlalchemy.exc import IntegrityError
 
 from .entities import Project, Version, User, ApiKey, Role, db
 
@@ -82,12 +83,15 @@ def delete_project(name: str):
 
 def add_version(project_name: str, version: Version) -> Project:
 
-    project = get_project(project_name)
-    if project is None:
-        return None
+    try:
+        project = get_project(project_name)
+        if project is None:
+            return None
 
-    project.versions.append(version)
-    db.session.commit()
+        project.versions.append(version)
+        db.session.commit()
+    except IntegrityError:
+        return None
 
     return project
 
