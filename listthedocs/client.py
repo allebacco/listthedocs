@@ -312,6 +312,8 @@ class ListTheDocs:
     def get_user(self, name) -> User:
         endpoint_url = self._base_url + '/api/v1/users/' + name
         response = self._session.get(endpoint_url)
+        if response.status_code == 404:
+            return None
         if response.status_code != 200:
             raise RuntimeError('Error during getting user ' + name)
 
@@ -353,4 +355,3 @@ class ListTheDocs:
         response = self._session.delete(endpoint_url, json=[role.to_json()])
         if response.status_code != 200:
             raise RuntimeError(response.json()['message'])
-
