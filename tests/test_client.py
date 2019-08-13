@@ -215,6 +215,11 @@ def test_add_user_creates_a_new_user(ltd_client: ListTheDocs):
     assert user.api_keys[0].is_valid is True
 
 
+def test_get_user_returns_none_when_user_does_not_exists(ltd_client: ListTheDocs):
+
+    assert ltd_client.get_user('foo') is None
+
+
 def test_get_user_returns_the_user(ltd_client: ListTheDocs):
 
     ltd_client.add_user('foo')

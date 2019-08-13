@@ -1,5 +1,3 @@
-import secrets
-
 from flask import Response, json as flask_json
 
 from ..entities import Entity
@@ -31,4 +29,13 @@ def json_response(code: int, *, json: 'dict or Entity or list[Entity]') -> Respo
 
 
 def generate_api_key() -> str:
-    return secrets.token_urlsafe()
+    try:
+        # Python >= 3.6
+        import secrets
+        return secrets.token_urlsafe()
+    except ImportError:
+        # Python 3.5
+        import os
+        import base64
+
+        return base64.urlsafe_b64encode(os.urandom(32)).rstrip(b'=').decode('ascii')
