@@ -4,22 +4,21 @@
     <script type="text/javascript">
         function gotodocs(obj)
         {
-         var selectedValue = obj.options[obj.selectedIndex].value;
-         window.location.href = selectedValue;
+            var selectedValue = obj.options[obj.selectedIndex].value;
+            window.location.href = selectedValue;
         }
 
         function on_filter_text_changed()
         {
-            var filter_text = document.getElementById("project-filter").value.toLowerCase();
+            var filter_text = $("#project-filter").val().trim().toLowerCase();
 
-            var project_cards = document.getElementById('project-list').getElementsByClassName("card");
-            for( var i = 0; i<project_cards.length; i++) {
-                project_name = project_cards[i].getAttribute("id").toLowerCase();
-                if(project_name.includes(filter_text) || filter_text == "")
-                    project_cards[i].style.visibility = "visible";
+            var project_cards = $("#project-list").children().each(function () {
+                project_name = $(this).attr('data-project-name').toLowerCase();
+                if(project_name.includes(filter_text) || filter_text.length == 0)
+                    $(this).removeClass("d-none");
                 else
-                    project_cards[i].style.visibility = "hidden";
-            }
+                    $(this).addClass("d-none");
+            });
         }
     </script>
 
@@ -31,7 +30,7 @@
 
             {% for project in projects %}
 
-                <div class="card" id="{{ project.name }}">
+                <div class="card" data-project-name="{{ project.name }}">
                     <div class="card-body p-2">
                         <h4 class="card-title">{{ project.name }}</h4>
                         {% if project.logo is not none %}
