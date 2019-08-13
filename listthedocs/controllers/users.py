@@ -5,7 +5,7 @@ from flask import Blueprint, current_app, abort, Flask, jsonify, redirect, rende
 
 from ..entities import User, ApiKey, Roles
 from .. import database
-from .utils import json_response, generate_api_key
+from .utils import json_response
 from ..security import ensure_admin, fail_if_readonly
 
 

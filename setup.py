@@ -9,12 +9,12 @@ setup(
     url='https://github.com/allebacco/listthedocs',
     packages=find_packages(),
     install_requires=[
-        'Flask',
         'natsort',
         'requests',
         'attrs',
         'python-dateutil',
         'Flask-SQLAlchemy',
+        'Flask',
     ],
     tests_require=[
         'pytest'

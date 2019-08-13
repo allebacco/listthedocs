@@ -1,22 +1,10 @@
-
-try:
-    import secrets
-
-    def generate_token():
-        return secrets.token_urlsafe()
-
-except ImportError:
-    import uuid
-
-    def generate_token():
-        return uuid.uuid4()
-
 from datetime import datetime
 from abc import abstractmethod
 from enum import Enum, unique
 
 from .entity import Entity, db
 from .project import Project
+from .utils import generate_api_key
 
 
 @unique
@@ -58,7 +46,7 @@ class ApiKey(db.Model, Entity):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    key = db.Column(db.String(), unique=True, nullable=False, default=generate_token)
+    key = db.Column(db.String(), unique=True, nullable=False, default=generate_api_key)
     is_valid = db.Column(db.Boolean, nullable=False, default=True)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
