@@ -41,7 +41,10 @@ The ``Version`` entity has the following fields:
 ## Client
 
 The ``ListTheDocs`` class defines all the functions needed to manage
-the ``Project`` and ``Version`` entities.
+the ``Project`` and ``Version`` entities. Moreover, the client provides functionalities
+for managing users and roles. 
+
+Below example usages for managing projects and versions.
 
 ### Adding a Project
 

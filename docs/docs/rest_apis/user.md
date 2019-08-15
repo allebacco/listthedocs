@@ -12,7 +12,9 @@ At first start, the service creates an administrator users named *root*.
 To authenticate as *root* user, you should use the API-Key set in the 
 `ROOT_API_KEY` configuration variable.
 
-## Adding new user
+## Users
+
+### Adding new user
 
 It is possible to add a new user with the following call:
 
@@ -57,7 +59,7 @@ The API-Key that the new user should use for authentication is in the
 `api_keys.key` field.
 
 
-## Reading a user
+### Reading a user
 
 It is possible to read an user using the following call:
 
@@ -89,7 +91,7 @@ Content-Type: application/json
 }
 ```
 
-## Reading all the users
+### Reading all the users
 
 It is possible to read all the users using the following call:
 
@@ -135,7 +137,9 @@ Content-Type: application/json
 ]
 ```
 
-## Adding roles to user
+## Roles
+
+### Adding roles to user
 
 It is possible to add a roles to a user using the following call:
 
@@ -167,7 +171,7 @@ Content-Type: application/json
 }
 ```
 
-## Removing roles from user
+### Removing roles from user
 
 It is possible to remove a roles from a user using the following call:
 
@@ -199,7 +203,7 @@ Content-Type: application/json
 }
 ```
 
-## Reading user roles
+### Reading user roles
 
 It is possible to read the roles of an user using the following call:
 

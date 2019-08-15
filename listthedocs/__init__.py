@@ -20,7 +20,7 @@ def create_app(override_config: dict=None):
         ROOT_API_KEY='ROOT-API-KEY',
         LOGIN_DISABLED=False,
 
-        COPYRIGHT='List The Docs',
+        COPYRIGHT='<a href="https://allebacco.github.io/listthedocs/">List The Docs</a>',
         TITLE='Software documentation',
         HEADER="<h2>Software documentation</h2>",
         READONLY=False,
@@ -29,7 +29,6 @@ def create_app(override_config: dict=None):
     app.config.from_pyfile('config.py', silent=True)
     if override_config is not None:
         app.config.update(override_config)
-
 
     app.config['SQLALCHEMY_DATABASE_URI'] = app.config['DATABASE_URI']
 
