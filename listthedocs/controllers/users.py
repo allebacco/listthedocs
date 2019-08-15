@@ -52,12 +52,12 @@ def get_users():
     return json_response(200, json=users)
 
 
-@users_apis.route('/api/v1/users/<name>/roles', methods=['GET'])
+@users_apis.route('/api/v1/users/<user_name>/roles', methods=['GET'])
 @ensure_admin
-def get_user_roles(name):
-    user = database.get_user_by_name(name)
+def get_user_roles(user_name):
+    user = database.get_user_by_name(user_name)
     if user is None:
-        return json_response(404, json={'message': 'User ' + name + ' does not exists'})
+        return json_response(404, json={'message': 'User ' + user_name + ' does not exists'})
 
     return json_response(200, json=user.roles)
 
@@ -122,6 +122,6 @@ def remove_user_roles(user_name):
 
         ok = database.remove_role_from_user(user.name, role_name, project_name)
         if not ok:
-            return json_response(400, json={'message': 'Error during adding role to user'})
+            return json_response(400, json={'message': 'Error during rtemoving role from user'})
 
-    return json_response(200, json={'message': 'Roles added to user'})
+    return json_response(200, json={'message': 'Roles removed from user'})

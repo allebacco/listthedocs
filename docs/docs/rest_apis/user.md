@@ -57,9 +57,41 @@ The API-Key that the new user should use for authentication is in the
 `api_keys.key` field.
 
 
-## Reading an user
+## Reading a user
 
 It is possible to read an user using the following call:
+
+```http
+GET /api/v1/users/bar HTTP/1.1
+Content-Type: application/json
+Api-Key: f9bf78b9a18ce6d46a0cd2b0b86df9da
+```
+
+The response contains a list with all the users.
+
+
+```http
+HTTP/1.1 200 Ok
+Content-Type: application/json
+
+{
+    "api_keys": [
+        {
+            "created_at": "2019-07-28T15:36:07.905314",
+            "is_valid": true,
+            "key": "18634317c8d7116237af1f82f03b9a26"
+        }
+    ],
+    "created_at": "2019-07-28T15:36:07.891430",
+    "is_admin": false,
+    "name": "bar",
+    "roles": []
+}
+```
+
+## Reading all the users
+
+It is possible to read all the users using the following call:
 
 ```http
 GET /api/v1/users HTTP/1.1
@@ -69,22 +101,128 @@ Api-Key: f9bf78b9a18ce6d46a0cd2b0b86df9da
 
 The response contains the requested user.
 
+```http
+HTTP/1.1 200 Ok
+Content-Type: application/json
+
+[
+    {
+        "api_keys": [
+            {
+                "created_at": "2019-07-28T15:37:15.786432",
+                "is_valid": true,
+                "key": "JUGT4EbTWwqL9Lr5baSLgC4iYwylC5uCWvfDpHof-XQ"
+            }
+        ],
+        "created_at": "2019-07-28T15:37:15.786432",
+        "is_admin": true,
+        "name": "root",
+        "roles": []
+    },
+    {
+        "api_keys": [
+            {
+                "created_at": "2019-07-28T15:36:07.905314",
+                "is_valid": true,
+                "key": "18634317c8d7116237af1f82f03b9a26"
+            }
+        ],
+        "created_at": "2019-07-28T15:36:07.891430",
+        "is_admin": false,
+        "name": "bar",
+        "roles": []
+    }
+]
+```
+
+## Adding roles to user
+
+It is possible to add a roles to a user using the following call:
 
 ```http
-HTTP/1.1 201 Ok
+PATCH /api/v1/users/bar/roles HTTP/1.1
+Content-Type: application/json
+Api-Key: f9bf78b9a18ce6d46a0cd2b0b86df9da
+
+[
+    {
+        "role_name": "ADD_VERSION",
+        "project_name": "project1"
+    },
+    {
+        "role_name": "UPDATE_PROJECT",
+        "project_name": "project2"
+    }
+]
+```
+
+The response confirms the roles have been added to the user for the selected projects.
+
+```http
+HTTP/1.1 200 Ok
 Content-Type: application/json
 
 {
-    "api_keys": [
-        {
-            "created_at": "2019-07-28T15:36:07.905314",
-            "is_valid": true,
-            "key": "JUGT4EbTWwqL9Lr5baSLgC4iYwylC5uCWvfDpHof-XQ"
-        }
-    ],
-    "created_at": "2019-07-28T15:36:07.891430",
-    "is_admin": false,
-    "name": "bar",
-    "roles": []
+    "message": "Roles added to user"
 }
+```
+
+## Removing roles from user
+
+It is possible to remove a roles from a user using the following call:
+
+```http
+DELETE /api/v1/users/bar/roles HTTP/1.1
+Content-Type: application/json
+Api-Key: f9bf78b9a18ce6d46a0cd2b0b86df9da
+
+[
+    {
+        "role_name": "ADD_VERSION",
+        "project_name": "project1"
+    },
+    {
+        "role_name": "UPDATE_PROJECT",
+        "project_name": "project2"
+    }
+]
+```
+
+The response confirms the roles have been removed from the user for the selected projects.
+
+```http
+HTTP/1.1 200 Ok
+Content-Type: application/json
+
+{
+    "message": "Roles removed from user"
+}
+```
+
+## Reading user roles
+
+It is possible to read the roles of an user using the following call:
+
+```http
+GET /api/v1/users/bar/roles HTTP/1.1
+Content-Type: application/json
+Api-Key: f9bf78b9a18ce6d46a0cd2b0b86df9da
+```
+
+The response contains the roles of the user.
+
+```http
+HTTP/1.1 200 Ok
+Content-Type: application/json
+
+[
+    {
+        "role_name": "ADD_VERSION",
+        "project_name": "project1"
+    },
+    {
+        "role_name": "UPDATE_PROJECT",
+        "project_name": "project2"
+    }
+]
 ```

@@ -15,6 +15,7 @@ nav:
       Projects: rest_apis/project.md
       Users: rest_apis/user.md
   - Python Client: python_client.md
+  - Security: security.md
   - About:
     - License: about/license.md
 
