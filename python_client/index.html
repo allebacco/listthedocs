@@ -247,10 +247,46 @@
       
 
 
-  <li class="md-nav__item">
-    <a href="../rest_api/" title="REST APIs" class="md-nav__link">
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
       REST APIs
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        REST APIs
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../rest_apis/project/" title="Projects" class="md-nav__link">
+      Projects
     </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../rest_apis/user/" title="Users" class="md-nav__link">
+      Users
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
   </li>
 
     
@@ -398,15 +434,27 @@
       
 
 
+  <li class="md-nav__item">
+    <a href="../security/" title="Security" class="md-nav__link">
+      Security
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6">
     
-    <label class="md-nav__link" for="nav-5">
+    <label class="md-nav__link" for="nav-6">
       About
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
-      <label class="md-nav__title" for="nav-5">
+      <label class="md-nav__title" for="nav-6">
         About
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -640,7 +688,9 @@ of an HTML <code>img</code> tag. E.g.:</p>
 </table>
 <h2 id="client">Client</h2>
 <p>The <code>ListTheDocs</code> class defines all the functions needed to manage
-the <code>Project</code> and <code>Version</code> entities.</p>
+the <code>Project</code> and <code>Version</code> entities. Moreover, the client provides functionalities
+for managing users and roles. </p>
+<p>Below example usages for managing projects and versions.</p>
 <h3 id="adding-a-project">Adding a Project</h3>
 <p>The following code will add a project:</p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">listthedocs.client</span> <span class="kn">import</span> <span class="n">ListTheDocs</span><span class="p">,</span> <span class="n">Project</span>
@@ -791,7 +841,7 @@ it (e.g. in case documentation has been moved to a different URL).</p>
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../rest_api/" title="REST APIs" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../rest_apis/user/" title="Users" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -800,19 +850,19 @@ it (e.g. in case documentation has been moved to a different URL).</p>
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                REST APIs
+                Users
               </span>
             </div>
           </a>
         
         
-          <a href="../about/license/" title="License" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../security/" title="Security" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                License
+                Security
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
