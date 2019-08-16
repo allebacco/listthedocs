@@ -2,8 +2,8 @@ import functools
 
 from flask import request, current_app, Response, json as flask_json
 from werkzeug.local import LocalProxy
-from . import database
-from . entities import Roles
+from .. import database
+from .. entities import Roles
 
 
 def get_authenticated_user():
@@ -16,24 +16,6 @@ def get_authenticated_user():
 
 
 current_user = LocalProxy(get_authenticated_user)
-
-
-def ensure_valid_key(controller_func):
-
-    @functools.wraps(controller_func)
-    def decorated_view(*args, **kwargs):
-        if current_app.config.get('LOGIN_DISABLED'):
-            return controller_func(*args, **kwargs)
-
-        if current_user._get_current_object() is None:
-            return Response(
-                response=flask_json.dumps({'message': 'Invalid Api-Key'}),
-                status=403,
-                mimetype='application/json'
-            )
-
-        return controller_func(*args, **kwargs)
-    return decorated_view
 
 
 def ensure_admin(controller_func):
@@ -94,3 +76,32 @@ def has_role(role: Roles, project_name: str) -> bool:
         return True
 
     return database.check_user_has_role(current_user.name, role.value, project_name)
+
+
+def ensure_role_on_project(*, role):
+
+    def wrap(controller_func):
+        @functools.wraps(controller_func)
+        def decorated_view(project_name, *args, **kwargs):
+            if current_app.config['LOGIN_DISABLED'] is True:
+                return controller_func(*args, **kwargs)
+
+            if current_user._get_current_object() is None:
+                return Response(
+                    response=flask_json.dumps({'message': 'Invalid Api-Key'}),
+                    status=403,
+                    mimetype='application/json'
+                )
+
+            if not database.check_user_has_role(current_user.name, role.value, project_name):
+                return Response(
+                    response=flask_json.dumps({'message': 'Action not allowed'}),
+                    status=403,
+                    mimetype='application/json'
+                )
+
+            return controller_func(project_name, *args, **kwargs)
+
+        return decorated_view
+
+    return wrap

@@ -5,7 +5,8 @@ from flask import Blueprint, current_app, abort, Flask, jsonify, redirect, rende
 from ..entities import Version, Roles
 from .. import database
 from .utils import json_response
-from ..security import ensure_admin, ensure_logged_user, has_role, fail_if_readonly
+from .security import ensure_admin, ensure_logged_user, has_role, fail_if_readonly, \
+    ensure_role_on_project
 
 
 projects_apis = Blueprint('projects_apis', __name__)
@@ -53,10 +54,8 @@ def get_project(project_name):
 
 @projects_apis.route('/api/v1/projects/<project_name>', methods=['PATCH'])
 @fail_if_readonly
-@ensure_logged_user
+@ensure_role_on_project(role=Roles.UPDATE_PROJECT)
 def update_project(project_name):
-    if not has_role(Roles.UPDATE_PROJECT, project_name):
-        return json_response(403, json={'message': 'Action not allowed'})
 
     json_data = request.get_json()
     if json_data is None:
@@ -80,10 +79,8 @@ def update_project(project_name):
 
 @projects_apis.route('/api/v1/projects/<project_name>', methods=['DELETE'])
 @fail_if_readonly
-@ensure_logged_user
+@ensure_role_on_project(role=Roles.REMOVE_PROJECT)
 def delete_project(project_name):
-    if not has_role(Roles.REMOVE_PROJECT, project_name):
-        return json_response(403, json={'message': 'Action not allowed'})
 
     ok = database.delete_project(project_name)
     if ok is True:
@@ -94,10 +91,8 @@ def delete_project(project_name):
 
 @projects_apis.route('/api/v1/projects/<project_name>/versions', methods=['POST'])
 @fail_if_readonly
-@ensure_logged_user
+@ensure_role_on_project(role=Roles.ADD_VERSION)
 def add_version(project_name):
-    if not has_role(Roles.ADD_VERSION, project_name):
-        return json_response(403, json={'message': 'Action not allowed'})
 
     json_data = request.get_json()
     if json_data is None:
@@ -121,10 +116,8 @@ def add_version(project_name):
 
 @projects_apis.route('/api/v1/projects/<project_name>/versions/<version_name>', methods=['DELETE'])
 @fail_if_readonly
-@ensure_logged_user
+@ensure_role_on_project(role=Roles.REMOVE_VERSION)
 def remove_version(project_name, version_name):
-    if not has_role(Roles.REMOVE_VERSION, project_name):
-        return json_response(403, json={'message': 'Action not allowed'})
 
     database.remove_version(project_name, version_name)
 
@@ -134,10 +127,8 @@ def remove_version(project_name, version_name):
 
 @projects_apis.route('/api/v1/projects/<project_name>/versions/<version_name>', methods=['PATCH'])
 @fail_if_readonly
-@ensure_logged_user
+@ensure_role_on_project(role=Roles.UPDATE_VERSION)
 def update_version(project_name, version_name):
-    if not has_role(Roles.UPDATE_VERSION, project_name):
-        return json_response(403, json={'message': 'Action not allowed'})
 
     json_data = request.get_json()
     if json_data is None:
