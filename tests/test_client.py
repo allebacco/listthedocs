@@ -155,7 +155,7 @@ def test_add_version(ltd_client: ListTheDocs):
     assert project.name == 'test_project1'
     assert project.description == 'description1'
     assert project.logo is None
-    assert isinstance(project.versions, tuple)
+    assert isinstance(project.versions, (tuple, list))
     assert len(project.versions) == 1
     assert project.versions[0].name == '1.0.0'
     assert project.versions[0].url == 'www.example.com/index.html'

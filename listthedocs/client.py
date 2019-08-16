@@ -10,102 +10,30 @@ from enum import Enum, unique
 from .attr_utils import ListOf, String, Bool, DateTime, EnumString
 
 
-class Entity(ABC):
-    """Base entity object that can convert to a from JSON.
-    """
-
-    @abstractmethod
-    def to_json(self) -> dict:
-        """Convert self object into JSON represntation.
-
-        Returns:
-            dict: The JSON representation
-        """
-        pass
-
-    @abstractstaticmethod
-    def from_json(obj: dict) -> 'Entity':
-        """Create an entity instance from the JSON representation.
-
-        Args:
-            obj(dict): The JSON representation
-
-        Returns:
-            Entity: The entity instance
-        """
-        pass
-
-
-class Version(Entity):
+@attr.s
+class Version:
     """The documentation version
     """
 
-    def __init__(self, name: str, url: str):
-        """Constructor.
+    name = String()
+    url = String()
 
-        Args:
-            name(str): The name of the version (e.g. 1.0.0)
-            url(str): The documentation URL
-        """
-        self._name = name
-        self._url = url
-
-    @property
-    def name(self) -> str:
-        """str: The version Name"""
-        return self._name
-
-    @property
-    def url(self) -> str:
-        """str: The version URL"""
-        return self._url
-
-    def to_json(self):
-        return {"name": self._name, "url": self._url}
-
-    @staticmethod
-    def from_json(obj: dict) -> 'Version':
-        return Version(name=obj['name'], url=obj['url'])
+    def to_json(self) -> dict:
+        return attr.asdict(self)
 
 
-class Project(Entity):
+@attr.s
+class Project:
     """The project
     """
 
-    def __init__(self, name: str, description: str, logo: str=None, versions=tuple()):
-        """Contructor.
+    name = String()
+    description = String()
+    logo = String(default=None)
+    versions = ListOf(Version, default=tuple())
 
-        Args:
-            name(str): The name of the project
-            description(str): The description of the project
-
-        Keyword Args:
-            logo(str): The logo of the project
-        """
-        self._name = name
-        self._description = description
-        self._versions = versions
-        self._logo = logo
-
-    @property
-    def name(self) -> str:
-        """str: The name of the project"""
-        return self._name
-
-    @property
-    def description(self) -> str:
-        """str: The description of the project"""
-        return self._description
-
-    @property
-    def logo(self) -> str:
-        """The logo of the project"""
-        return self._logo
-
-    @property
-    def versions(self) -> str:
-        """tuple[Version]: The project documentation versions."""
-        return self._versions
+    def to_json(self) -> dict:
+        return attr.asdict(self)
 
     def get_version(self, version_name) -> Version:
         """Get a documentation version.
@@ -116,33 +44,17 @@ class Project(Entity):
         Returns:
             Version: The requested version or None if not present
         """
-        if len(self._versions) == 0:
+        if len(self.versions) == 0:
             return None
 
         if version_name == 'latest':
-            return self._versions[-1]
+            return self.versions[-1]
 
-        versions = list(filter(lambda v: v.name == version_name, self._versions))
+        versions = list(filter(lambda v: v.name == version_name, self.versions))
         if len(versions) > 0:
             return versions[0]
 
         return None
-
-    def to_json(self):
-        return {
-            "name": self._name,
-            "description": self._description,
-            'logo': self._logo,
-            "versions": tuple(v.to_json() for v in self._versions),
-        }
-
-    @staticmethod
-    def from_json(obj: dict) -> 'Project':
-        return Project(
-            name=obj['name'], description=obj['description'],
-            logo=obj.get('logo', None),
-            versions=tuple(Version.from_json(v) for v in obj.get('versions', [])),
-        )
 
 
 @attr.s
@@ -216,7 +128,7 @@ class ListTheDocs:
         if response.status_code != 201:
             raise RuntimeError('Error during adding project ' + project.name)
 
-        return Project.from_json(response.json())
+        return Project(**response.json())
 
     def get_projects(self) -> 'tuple[Project]':
         endpoint_url = self._base_url + '/api/v1/projects'
@@ -224,7 +136,7 @@ class ListTheDocs:
         if response.status_code != 200:
             raise RuntimeError('Error during getting projects')
 
-        return tuple(Project.from_json(p) for p in response.json())
+        return tuple(Project(**p) for p in response.json())
 
     def get_project(self, name) -> Project:
         endpoint_url = self._base_url + '/api/v1/projects/{}'.format(name)
@@ -234,7 +146,7 @@ class ListTheDocs:
         if response.status_code != 200:
             raise RuntimeError('Error during getting project ' + name)
 
-        return Project.from_json(response.json())
+        return Project(**response.json())
 
     def update_project(self, project_name: str, *, description: str=None, logo: str=None) -> Project:
         endpoint_url = self._base_url + '/api/v1/projects/{}'.format(project_name)
@@ -249,7 +161,7 @@ class ListTheDocs:
         if response.status_code != 200:
             raise RuntimeError('Error during updating project')
 
-        return Project.from_json(response.json())
+        return Project(**response.json())
 
     def delete_project(self, project_name: str):
         endpoint_url = self._base_url + '/api/v1/projects/{}'.format(project_name)
@@ -263,7 +175,7 @@ class ListTheDocs:
         if response.status_code != 201:
             raise RuntimeError('Error during creating project version')
 
-        return Project.from_json(response.json())
+        return Project(**response.json())
 
     def delete_version(self, project_name: str, version_name: str) -> Project:
         endpoint_url = self._base_url + '/api/v1/projects/{}/versions/{}'.format(project_name, version_name)
@@ -271,7 +183,7 @@ class ListTheDocs:
         if response.status_code != 200:
             raise RuntimeError('Error during deleting version ' + version_name)
 
-        return Project.from_json(response.json())
+        return Project(**response.json())
 
     def update_version(self, project_name: str, version_name: str, *, url: str) -> Project:
         endpoint_url = self._base_url + '/api/v1/projects/{}/versions/{}'.format(project_name, version_name)
@@ -284,7 +196,7 @@ class ListTheDocs:
         if response.status_code != 200:
             raise RuntimeError('Error during updating ' + version_name)
 
-        return Project.from_json(response.json())
+        return Project(**response.json())
 
     @staticmethod
     def load_logo_from_file(filename: str) -> str:

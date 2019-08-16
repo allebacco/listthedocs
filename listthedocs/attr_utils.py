@@ -7,7 +7,7 @@ from typing import List, Union
 from .datetime_utils import iso8601_to_datetime
 
 
-def ListOf(element_type):
+def ListOf(element_type, default=attr.NOTHING):
 
     if attr.has(element_type):
         def converter(values: List[dict]):
@@ -20,11 +20,11 @@ def ListOf(element_type):
                 return None
             return [element_type(v) for v in values]
 
-    return attr.ib(type=List[element_type], converter=converter)
+    return attr.ib(type=List[element_type], converter=converter, default=default)
 
 
-def String():
-    return attr.ib(type=str)
+def String(default=attr.NOTHING):
+    return attr.ib(type=str, default=default)
 
 
 def EnumString(enum: type):
