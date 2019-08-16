@@ -17,12 +17,12 @@ And for Windows Powershell use:
 
 ### Configuration
 
-The service can be configured with a Python file 'config.py' that can be placed in the app
+The service can be configured with a Python file `config.py` that can be placed in the app
 ["instance_path"](https://flask.palletsprojects.com/en/1.0.x/config/#instance-folders).
 
 The *instance_path* can be customized by setting the *INSTANCE_PATH* to an absolute path.
 
-The configuration is loaded from the 'config.py' in the *instance_path*:
+The configuration is loaded from the `config.py` in the *instance_path*:
 
 - **DATABASE_URI**: The URI for connecting to an SQL database. Defualt to 
   `sqlite:///INSTANCE_PATH/listthedocs.sqlite`. *ListTheDocs* uses *SQLAlchemy* for 
@@ -31,6 +31,8 @@ The configuration is loaded from the 'config.py' in the *instance_path*:
 - **TITLE**: The title of the web pages.
 - **HEADER**: The header of the web page. HTML is allowed.
 - **READONLY**: Set to true to disable the write REST APIs.
+- **LOGIN_DISABLED**: Disable the login and security.
+- **ROOT_API_KEY**: The Api-Key for the `root` user. Default `ROOT-API-KEY`.
 
 ### Usage
 

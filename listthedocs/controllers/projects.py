@@ -27,7 +27,7 @@ def add_project():
 
     name = json_data['name']
     description = json_data['description']
-    logo = json_data.get('logo', None) #'http://placehold.it/96x96')
+    logo = json_data.get('logo', None)  # 'http://placehold.it/96x96')
     project = database.add_project(name, description, logo)
 
     if project is not None:
