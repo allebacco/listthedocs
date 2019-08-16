@@ -562,10 +562,10 @@ commands:</p>
 
 
 <h3 id="configuration">Configuration</h3>
-<p>The service can be configured with a Python file 'config.py' that can be placed in the app
+<p>The service can be configured with a Python file <code>config.py</code> that can be placed in the app
 <a href="https://flask.palletsprojects.com/en/1.0.x/config/#instance-folders">"instance_path"</a>.</p>
 <p>The <em>instance_path</em> can be customized by setting the <em>INSTANCE_PATH</em> to an absolute path.</p>
-<p>The configuration is loaded from the 'config.py' in the <em>instance_path</em>:</p>
+<p>The configuration is loaded from the <code>config.py</code> in the <em>instance_path</em>:</p>
 <ul>
 <li><strong>DATABASE_URI</strong>: The URI for connecting to an SQL database. Defualt to 
   <code>sqlite:///INSTANCE_PATH/listthedocs.sqlite</code>. <em>ListTheDocs</em> uses <em>SQLAlchemy</em> for 
@@ -574,6 +574,8 @@ commands:</p>
 <li><strong>TITLE</strong>: The title of the web pages.</li>
 <li><strong>HEADER</strong>: The header of the web page. HTML is allowed.</li>
 <li><strong>READONLY</strong>: Set to true to disable the write REST APIs.</li>
+<li><strong>LOGIN_DISABLED</strong>: Disable the login and security.</li>
+<li><strong>ROOT_API_KEY</strong>: The Api-Key for the <code>root</code> user. Default <code>ROOT-API-KEY</code>.</li>
 </ul>
 <h3 id="usage">Usage</h3>
 <p>The service provides a set of REST APIs to manage projects and versions.</p>
