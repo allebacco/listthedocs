@@ -39,7 +39,7 @@ The *instance_path* can be customized by setting the *INSTANCE_PATH* to an absol
 
 The configuration is loaded from the 'config.py' in the *instance_path*:
 
-- **DATABASE**: The path to the SQLite database. Defualt to *instance_path/listthedocs.sqlite*.
+- **DATABASE_URI**: Database connection URI. Default to an SQLite database.
 - **COPYRIGHT**: The copyright footer message. HTML is allowed.
 - **TITLE**: The title of the web pages.
 - **HEADER**: The header of the web page. HTML is allowed.
