@@ -5,7 +5,10 @@ from flask import current_app
 from flask.cli import with_appcontext
 from sqlalchemy.exc import IntegrityError
 
-from .entities import Project, Version, User, ApiKey, Role, db
+from ..entities import Project, Version, User, ApiKey, Role, db
+from .exceptions import ApiKeyNotFound, UserNotFound, \
+    ProjectNotFound, VersionNotFound, DuplicatedUserName, DuplicatedProjectName, \
+    DuplicatedVersionName
 
 
 def init_root_user():
@@ -35,9 +38,12 @@ def init_app(app):
 
 def add_project(name: str, description: str, logo: str) -> Project:
 
-    project = Project(name=name, description=description, logo=logo)
-    db.session.add(project)
-    db.session.commit()
+    try:
+        project = Project(name=name, description=description, logo=logo)
+        db.session.add(project)
+        db.session.commit()
+    except IntegrityError:
+        raise DuplicatedProjectName()
 
     return project
 
@@ -56,7 +62,7 @@ def update_project(name: str, description: str=None, logo: str=None) -> Project:
 
     project = get_project(name)
     if project is None:
-        return None
+        raise ProjectNotFound()
 
     if description is not None:
         project.description = description
@@ -73,25 +79,23 @@ def delete_project(name: str):
 
     project = get_project(name)
     if project is None:
-        return True
+        return
 
     db.session.delete(project)
     db.session.commit()
 
-    return True
-
 
 def add_version(project_name: str, version: Version) -> Project:
 
-    try:
-        project = get_project(project_name)
-        if project is None:
-            return None
+    project = get_project(project_name)
+    if project is None:
+        raise ProjectNotFound()
 
+    try:
         project.versions.append(version)
         db.session.commit()
     except IntegrityError:
-        return None
+        raise DuplicatedVersionName()
 
     return project
 
@@ -100,36 +104,41 @@ def remove_version(project_name: str, version_name: str):
 
     project = get_project(project_name)
     if project is None:
-        return False
+        raise ProjectNotFound()
 
     version = project.get_version(version_name)
+    if version is None:
+        return
 
     db.session.delete(version)
     db.session.commit()
-
-    return True
 
 
 def update_version(project_name: str, version_name: str, new_url: str=None):
 
     project = get_project(project_name)
     if project is None:
-        return False
+        raise ProjectNotFound()
 
     version = project.get_version(version_name)
+    if version is None:
+        raise VersionNotFound()
 
     if new_url is not None:
         version.url = new_url
 
     db.session.commit()
 
-    return True
-
 
 def add_user(user: User) -> User:
 
-    db.session.add(user)
-    db.session.commit()
+    try:
+        db.session.add(user)
+        db.session.commit()
+
+    except IntegrityError:
+        raise DuplicatedUserName()
+
     return user
 
 
@@ -146,7 +155,7 @@ def get_user_for_api_key(api_key: str) -> User:
 
     key = ApiKey.query.filter_by(key=api_key).first()
     if key is None:
-        return None
+        raise ApiKeyNotFound()
 
     return key.user
 
@@ -155,37 +164,34 @@ def add_role_to_user(user_name, role_name, project_name):
 
     user = get_user_by_name(user_name)
     if user is None:
-        return False
+        raise UserNotFound()
+
     project = get_project(project_name)
     if project is None:
-        return False
+        raise ProjectNotFound()
 
     user.roles.append(Role(name=role_name, project=project_name))
     db.session.commit()
-
-    return True
 
 
 def remove_role_from_user(user_name, role_name, project_name):
 
     user = get_user_by_name(user_name)
     if user is None:
-        return False
+        raise UserNotFound()
 
     for role in user.roles:
         if role.name == role_name and role.project == project_name:
             user.roles.remove(role)
-            db.session.commit()
-            return True
 
-    return False
+    db.session.commit()
 
 
 def check_user_has_role(user_name, role_name, project_name) -> bool:
 
     user = get_user_by_name(user_name)
     if user is None:
-        return False
+        raise UserNotFound()
 
     for role in user.roles:
         if role.name == role_name and role.project == project_name:

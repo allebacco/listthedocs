@@ -1,6 +1,7 @@
-from flask import Response, json as flask_json
+from flask import Response, json as flask_json, request
 
 from ..entities import Entity
+from .exceptions import InvalidJSONBody, MissingJSONField
 
 
 def json_response(code: int, *, json: 'dict or Entity or list[Entity]') -> Response:
@@ -39,3 +40,17 @@ def generate_api_key() -> str:
         import base64
 
         return base64.urlsafe_b64encode(os.urandom(32)).rstrip(b'=').decode('ascii')
+
+
+def get_json_body():
+    body = request.get_json(silent=True)
+    if body is None:
+        raise InvalidJSONBody()
+
+    return body
+
+
+def ensure_json_request_fields(json_body: dict, field_names: tuple):
+    for field_name in field_names:
+        if field_name not in json_body:
+            raise MissingJSONField(field_name)

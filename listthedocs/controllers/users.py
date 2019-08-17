@@ -1,15 +1,21 @@
 import os
 
 from datetime import datetime
+from werkzeug.exceptions import HTTPException
 from flask import Blueprint, current_app, abort, Flask, jsonify, redirect, render_template, request
 
 from ..entities import User, ApiKey, Roles
-from .. import database
-from .utils import json_response
+from ..database import database
+from .utils import json_response, get_json_body, ensure_json_request_fields
 from .security import ensure_admin, fail_if_readonly
+from .errors import handle_http_errors, handle_generic_errors
+from .exceptions import EntityNotFound, EntityConflict, InvalidJSONBody
 
 
 users_apis = Blueprint('users_apis', __name__)
+
+users_apis.register_error_handler(HTTPException, handle_http_errors)
+users_apis.register_error_handler(Exception, handle_generic_errors)
 
 
 @users_apis.route('/api/v1/users', methods=['POST'])
@@ -17,31 +23,29 @@ users_apis = Blueprint('users_apis', __name__)
 @fail_if_readonly
 def add_user():
 
-    json_data = request.get_json()
-    if json_data is None:
-        return json_response(400, json={'message': 'Missing or invalid JSON data'})
-    if 'name' not in json_data:
-        return json_response(400, json={'message': 'name missing from JSON data'})
+    json_data = get_json_body()
+    ensure_json_request_fields(json_data, ['name'])
 
     name = json_data['name']
     is_admin = json_data.get('is_admin', False)
 
     user = User(name=name, is_admin=is_admin)
     user.api_keys.append(ApiKey())
-    user = database.add_user(user)
+    try:
+        user = database.add_user(user)
+    except database.DuplicatedUserName:
+        raise EntityConflict('user', name)
 
-    if user is not None:
-        return json_response(201, json=user)
-
-    return json_response(400, json={'message': 'Error during adding user ' + name})
+    return json_response(201, json=user)
 
 
-@users_apis.route('/api/v1/users/<name>', methods=['GET'])
+@users_apis.route('/api/v1/users/<user_name>', methods=['GET'])
 @ensure_admin
-def get_user_by_name(name):
-    user = database.get_user_by_name(name)
+def get_user_by_name(user_name):
+    user = database.get_user_by_name(user_name)
     if user is None:
-        return json_response(404, json={'message': 'User ' + name + ' does not exists'})
+        raise EntityNotFound('user', user_name)
+
     return json_response(200, json=user)
 
 
@@ -57,7 +61,7 @@ def get_users():
 def get_user_roles(user_name):
     user = database.get_user_by_name(user_name)
     if user is None:
-        return json_response(404, json={'message': 'User ' + user_name + ' does not exists'})
+        raise EntityNotFound('user', user_name)
 
     return json_response(200, json=user.roles)
 
@@ -69,29 +73,26 @@ def add_user_roles(user_name):
 
     user = database.get_user_by_name(user_name)
     if user is None:
-        return json_response(404, json={'message': 'User ' + user_name + ' does not exists'})
+        raise EntityNotFound('user', user_name)
 
-    json_data = request.get_json()
-    print(json_data)
-    if json_data is None:
-        return json_response(400, json={'message': 'Invalid JSON data'})
+    json_data = get_json_body()
     if not isinstance(json_data, (list, tuple)):
-        return json_response(400, json={'message': 'Expected a list of JSON roles'})
+        raise InvalidJSONBody()
 
     for json_role in json_data:
-        if 'role_name' not in json_role:
-            return json_response(400, json={'message': 'role_name missing from JSON data'})
-        if 'project_name' not in json_role:
-            return json_response(400, json={'message': 'project_name missing from JSON data'})
+        ensure_json_request_fields(json_role, ('role_name', 'project_name'))
 
         role_name = json_role['role_name']
         project_name = json_role['project_name']
         if not Roles.is_valid(role_name):
             return json_response(400, json={'message': 'Invalid role name'})
 
-        ok = database.add_role_to_user(user.name, role_name, project_name)
-        if not ok:
-            return json_response(400, json={'message': 'Error during adding role to user'})
+        try:
+            database.add_role_to_user(user.name, role_name, project_name)
+        except database.UserNotFound:
+            raise EntityNotFound('user', user_name)
+        except database.ProjectNotFound:
+            raise EntityNotFound('project', project_name)
 
     return json_response(200, json={'message': 'Roles added to user'})
 
@@ -101,27 +102,25 @@ def add_user_roles(user_name):
 def remove_user_roles(user_name):
     user = database.get_user_by_name(user_name)
     if user is None:
-        return json_response(404, json={'message': 'User ' + user_name + ' does not exists'})
+        raise EntityNotFound('user', user_name)
 
-    json_data = request.get_json()
-    if json_data is None:
-        return json_response(400, json={'message': 'Missing or invalid JSON data'})
+    json_data = get_json_body()
     if not isinstance(json_data, (list, tuple)):
-        return json_response(400, json={'message': 'Missing or invalid JSON data'})
+        raise InvalidJSONBody()
 
     for json_role in json_data:
-        if 'role_name' not in json_role:
-            return json_response(400, json={'message': 'role_name missing from JSON data'})
-        if 'project_name' not in json_role:
-            return json_response(400, json={'message': 'project_name missing from JSON data'})
+        ensure_json_request_fields(json_role, ('role_name', 'project_name'))
 
         role_name = json_role['role_name']
         project_name = json_role['project_name']
         if not Roles.is_valid(role_name):
             return json_response(400, json={'message': 'Invalid role name'})
 
-        ok = database.remove_role_from_user(user.name, role_name, project_name)
-        if not ok:
-            return json_response(400, json={'message': 'Error during rtemoving role from user'})
+        try:
+            database.remove_role_from_user(user.name, role_name, project_name)
+        except database.UserNotFound:
+            raise EntityNotFound('user', user_name)
+        except database.ProjectNotFound:
+            raise EntityNotFound('project', project_name)
 
     return json_response(200, json={'message': 'Roles removed from user'})

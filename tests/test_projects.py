@@ -309,4 +309,4 @@ def test_add_same_version_name_multiple_time_to_project_fails(client):
         '/api/v1/projects/test_project1/versions',
         json={'name': '1.0.0', 'url': 'www.example.com/1.0.0/index.html'}
     )
-    assert response.status_code == 400
+    assert response.status_code == 409

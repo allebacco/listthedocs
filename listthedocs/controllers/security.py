@@ -2,8 +2,8 @@ import functools
 
 from flask import request, current_app, Response, json as flask_json
 from werkzeug.local import LocalProxy
-from .. import database
-from .. entities import Roles
+from ..database import database
+from ..entities import Roles
 
 
 def get_authenticated_user():

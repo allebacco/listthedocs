@@ -4,7 +4,7 @@ import os
 
 from flask import current_app, abort, redirect, render_template, Blueprint
 
-from .. import database
+from ..database import database
 
 
 webui = Blueprint('webui', __name__, template_folder='templates')

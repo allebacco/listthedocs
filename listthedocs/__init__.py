@@ -39,7 +39,7 @@ def create_app(override_config: dict=None):
         pass
 
     # Initialize database
-    from . import database
+    from .database import database
     database.init_app(app)
 
     from . import commands

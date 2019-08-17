@@ -1,39 +1,40 @@
 import os
 
+from werkzeug.exceptions import HTTPException
 from flask import Blueprint, current_app, abort, Flask, jsonify, redirect, render_template, request
 
 from ..entities import Version, Roles
-from .. import database
-from .utils import json_response
+from ..database import database
+from .utils import json_response, get_json_body, ensure_json_request_fields
 from .security import ensure_admin, ensure_logged_user, has_role, fail_if_readonly, \
     ensure_role_on_project
+from .errors import handle_http_errors, handle_generic_errors
+from .exceptions import InvalidJSONBody, MissingJSONField, InternalError, EntityNotFound, EntityConflict
 
 
 projects_apis = Blueprint('projects_apis', __name__)
+
+projects_apis.register_error_handler(HTTPException, handle_http_errors)
+projects_apis.register_error_handler(Exception, handle_generic_errors)
 
 
 @projects_apis.route('/api/v1/projects', methods=['POST'])
 @fail_if_readonly
 @ensure_admin
 def add_project():
+    json_data = get_json_body()
+    ensure_json_request_fields(json_data, ('name', 'description'))
 
-    json_data = request.get_json()
-    if json_data is None:
-        return json_response(400, json={'message': 'Missing or invalid JSON data'})
-    if 'name' not in json_data:
-        return json_response(400, json={'message': 'name missing from JSON data'})
-    if 'description' not in json_data:
-        return json_response(400, json={'message': 'description missing from JSON data'})
-
-    name = json_data['name']
+    project_name = json_data['name']
     description = json_data['description']
     logo = json_data.get('logo', None)  # 'http://placehold.it/96x96')
-    project = database.add_project(name, description, logo)
 
-    if project is not None:
-        return json_response(201, json=project)
+    try:
+        project = database.add_project(project_name, description, logo)
+    except database.DuplicatedProjectName:
+        raise EntityConflict('project', project_name)
 
-    return json_response(500, json={'message': 'Error during adding project ' + name})
+    return json_response(201, json=project)
 
 
 @projects_apis.route('/api/v1/projects', methods=['GET'])
@@ -48,7 +49,8 @@ def get_project(project_name):
 
     project = database.get_project(project_name)
     if project is None:
-        return json_response(404, json={'message': 'Project ' + project_name + ' does not exists'})
+        raise EntityNotFound('project', project_name)
+
     return json_response(200, json=project)
 
 
@@ -57,9 +59,7 @@ def get_project(project_name):
 @ensure_role_on_project(role=Roles.UPDATE_PROJECT)
 def update_project(project_name):
 
-    json_data = request.get_json()
-    if json_data is None:
-        return json_response(400, json={'message': 'Missing or invalid JSON data'})
+    json_data = get_json_body()
 
     kwargs = dict()
     if 'logo' in json_data:
@@ -69,12 +69,12 @@ def update_project(project_name):
     if len(kwargs) == 0:
         return json_response(400, json={'message': 'No field to update'})
 
-    project = database.update_project(project_name, **kwargs)
+    try:
+        project = database.update_project(project_name, **kwargs)
+    except database.ProjectNotFound:
+        raise EntityNotFound('project', project_name)
 
-    if project is not None:
-        return json_response(200, json=project)
-
-    return json_response(500, json={'message': 'Error during updating project ' + project_name})
+    return json_response(200, json=project)
 
 
 @projects_apis.route('/api/v1/projects/<project_name>', methods=['DELETE'])
@@ -82,11 +82,8 @@ def update_project(project_name):
 @ensure_role_on_project(role=Roles.REMOVE_PROJECT)
 def delete_project(project_name):
 
-    ok = database.delete_project(project_name)
-    if ok is True:
-        return json_response(200, json={'message': 'Removed project ' + project_name})
-
-    return json_response(500, json={'message': 'Error during removing project ' + project_name})
+    database.delete_project(project_name)
+    return json_response(200, json={'message': 'Removed project ' + project_name})
 
 
 @projects_apis.route('/api/v1/projects/<project_name>/versions', methods=['POST'])
@@ -94,22 +91,18 @@ def delete_project(project_name):
 @ensure_role_on_project(role=Roles.ADD_VERSION)
 def add_version(project_name):
 
-    json_data = request.get_json()
-    if json_data is None:
-        return json_response(400, json={'message': 'Missing or invalid JSON data'})
-    if 'url' not in json_data:
-        return json_response(400, json={'message': 'url missing from JSON data'})
-    if 'name' not in json_data:
-        return json_response(400, json={'message': 'name missing from JSON data'})
+    json_data = get_json_body()
+    ensure_json_request_fields(json_data, ('url', 'name'))
 
     url = json_data['url']
     version_name = json_data['name']
-    project = database.add_version(project_name, Version(version_name, url))
-    if project is None:
-        return json_response(
-            400,
-            json={'message': 'Error during adding version {} to project {}'.format(version_name, project_name)}
-        )
+
+    try:
+        project = database.add_version(project_name, Version(version_name, url))
+    except database.ProjectNotFound:
+        raise EntityNotFound('project', project_name)
+    except database.DuplicatedVersionName:
+        raise EntityConflict('version', version_name)
 
     return json_response(201, json=project)
 
@@ -119,7 +112,10 @@ def add_version(project_name):
 @ensure_role_on_project(role=Roles.REMOVE_VERSION)
 def remove_version(project_name, version_name):
 
-    database.remove_version(project_name, version_name)
+    try:
+        database.remove_version(project_name, version_name)
+    except database.ProjectNotFound:
+        raise EntityNotFound('project', project_name)
 
     project = database.get_project(project_name)
     return json_response(200, json=project)
@@ -130,14 +126,14 @@ def remove_version(project_name, version_name):
 @ensure_role_on_project(role=Roles.UPDATE_VERSION)
 def update_version(project_name, version_name):
 
-    json_data = request.get_json()
-    if json_data is None:
-        return json_response(400, json={'message': 'Missing or invalid JSON data'})
-    if 'url' not in json_data:
-        return json_response(400, json={'message': 'url missing from JSON data'})
+    json_data = get_json_body()
+    ensure_json_request_fields(json_data, ['url'])
 
     url = json_data['url']
-    database.update_version(project_name, version_name, new_url=url)
+    try:
+        database.update_version(project_name, version_name, new_url=url)
+    except database.ProjectNotFound:
+        raise EntityNotFound('project', project_name)
 
     project = database.get_project(project_name)
     return json_response(200, json=project)
