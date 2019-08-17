@@ -6,8 +6,7 @@ from flask import Blueprint, current_app, abort, Flask, jsonify, redirect, rende
 from ..entities import Version, Roles
 from ..database import database
 from .utils import json_response, get_json_body, ensure_json_request_fields
-from .security import ensure_admin, ensure_logged_user, has_role, fail_if_readonly, \
-    ensure_role_on_project
+from .security import ensure_admin, fail_if_readonly, ensure_role_on_project
 from .errors import handle_http_errors, handle_generic_errors
 from .exceptions import InvalidJSONBody, MissingJSONField, InternalError, EntityNotFound, EntityConflict
 

@@ -1,7 +1,8 @@
 """Exceptions for the REST APIs
 """
 
-from werkzeug.exceptions import HTTPException, BadRequest, InternalServerError, NotFound, Conflict
+from werkzeug.exceptions import HTTPException, BadRequest, InternalServerError, NotFound, Conflict, \
+    Forbidden, Unauthorized, Locked
 
 
 class InvalidJSONBody(BadRequest):
@@ -31,3 +32,18 @@ class EntityConflict(Conflict):
 
     def __init__(self, entity_type: str, entity_name: str, message: str='already exists'):
         self.description = "{} '{}' {}".format(entity_type.title(), entity_name, message)
+
+
+class ForbiddenAction(Forbidden):
+
+    description = "You don't have the permission to complete this action"
+
+
+class UserUnauthorized(Unauthorized):
+
+    description = "You have not been authenticated"
+
+
+class ReadonlyLock(Locked):
+
+    description = "The site is readonly"

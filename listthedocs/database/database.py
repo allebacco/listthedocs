@@ -155,7 +155,7 @@ def get_user_for_api_key(api_key: str) -> User:
 
     key = ApiKey.query.filter_by(key=api_key).first()
     if key is None:
-        raise ApiKeyNotFound()
+        return None
 
     return key.user
 
