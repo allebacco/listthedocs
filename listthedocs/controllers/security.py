@@ -61,7 +61,7 @@ def ensure_role_on_project(*, role):
         @functools.wraps(controller_func)
         def decorated_view(project_name, *args, **kwargs):
             if current_app.config['LOGIN_DISABLED'] is True:
-                return controller_func(*args, **kwargs)
+                return controller_func(project_name, *args, **kwargs)
 
             if current_user._get_current_object() is None:
                 raise UserUnauthorized()
