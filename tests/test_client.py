@@ -6,9 +6,6 @@ from listthedocs import ListTheDocs
 from listthedocs.client import Project, Version, User, ApiKey, Project, Role, Roles
 
 
-ADMIN_HEADER = {'Api-Key': 'secret-key'}
-
-
 class MockClientResponse:
 
     def __init__(self, response):
@@ -33,19 +30,19 @@ class MockClientSession:
 
     def get(self, url: str):
         url = self._fix_url(url)
-        return MockClientResponse(self._client.get(url, headers=ADMIN_HEADER))
+        return MockClientResponse(self._client.get(url))
 
     def post(self, url: str, *, json):
         url = self._fix_url(url)
-        return MockClientResponse(self._client.post(url, json=json, headers=ADMIN_HEADER))
+        return MockClientResponse(self._client.post(url, json=json))
 
     def patch(self, url: str, *, json):
         url = self._fix_url(url)
-        return MockClientResponse(self._client.patch(url, json=json, headers=ADMIN_HEADER))
+        return MockClientResponse(self._client.patch(url, json=json))
 
     def delete(self, url: str, *, json=None):
         url = self._fix_url(url)
-        return MockClientResponse(self._client.delete(url, json=json, headers=ADMIN_HEADER))
+        return MockClientResponse(self._client.delete(url, json=json))
 
 
 @pytest.fixture
@@ -54,14 +51,6 @@ def ltd_client(client):
     ltd = ListTheDocs()
     ltd._session = MockClientSession(client)
     return ltd
-
-
-def add_all_roles_on_project(ltd_client: ListTheDocs, project_name: str):
-    ltd_client.add_role('root', Role(role_name=Roles.UPDATE_PROJECT, project_name=project_name))
-    ltd_client.add_role('root', Role(role_name=Roles.REMOVE_PROJECT, project_name=project_name))
-    ltd_client.add_role('root', Role(role_name=Roles.ADD_VERSION, project_name=project_name))
-    ltd_client.add_role('root', Role(role_name=Roles.REMOVE_VERSION, project_name=project_name))
-    ltd_client.add_role('root', Role(role_name=Roles.UPDATE_VERSION, project_name=project_name))
 
 
 def test_get_missing_project(ltd_client: ListTheDocs):
@@ -114,7 +103,6 @@ def test_get_projects_returns_all_the_projects(ltd_client: ListTheDocs):
 def test_update_project_description(ltd_client: ListTheDocs):
 
     ltd_client.add_project(Project('test_project1', 'description1'))
-    add_all_roles_on_project(ltd_client, 'test_project1')
 
     project = ltd_client.update_project('test_project1', description='new description')
     assert project.name == 'test_project1'
@@ -124,7 +112,6 @@ def test_update_project_description(ltd_client: ListTheDocs):
 def test_update_project_logo(ltd_client: ListTheDocs):
 
     ltd_client.add_project(Project('test_project1', 'description1'))
-    add_all_roles_on_project(ltd_client, 'test_project1')
 
     project = ltd_client.update_project('test_project1', logo='logo.jpg')
     assert project.name == 'test_project1'
@@ -135,7 +122,6 @@ def test_update_project_logo(ltd_client: ListTheDocs):
 def test_delete_project(ltd_client: ListTheDocs):
 
     ltd_client.add_project(Project('test_project1', 'description1'))
-    add_all_roles_on_project(ltd_client, 'test_project1')
 
     ltd_client.add_version('test_project1', Version('1.0.0', 'www.example.com/index.html'))
 
@@ -148,7 +134,6 @@ def test_delete_project(ltd_client: ListTheDocs):
 def test_add_version(ltd_client: ListTheDocs):
 
     ltd_client.add_project(Project('test_project1', 'description1'))
-    add_all_roles_on_project(ltd_client, 'test_project1')
 
     project = ltd_client.add_version('test_project1', Version('1.0.0', 'www.example.com/index.html'))
 
@@ -164,7 +149,6 @@ def test_add_version(ltd_client: ListTheDocs):
 def test_remove_version(ltd_client: ListTheDocs):
 
     ltd_client.add_project(Project('test_project1', 'description1'))
-    add_all_roles_on_project(ltd_client, 'test_project1')
 
     # Add multiple versions
     ltd_client.add_version('test_project1', Version('1.0.0', 'www.example.com/1.0.0/index.html'))
@@ -184,7 +168,6 @@ def test_remove_version(ltd_client: ListTheDocs):
 def test_update_version_link(ltd_client: ListTheDocs):
 
     ltd_client.add_project(Project('test_project1', 'description1'))
-    add_all_roles_on_project(ltd_client, 'test_project1')
 
     # Add multiple versions
     ltd_client.add_version('test_project1', Version('1.0.0', 'www.example.com/1.0.0/index.html'))
