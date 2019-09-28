@@ -54,8 +54,8 @@ The service provides a set of REST APIs to manage projects and versions.
 #### Build and Host documentation
 
 Before using the APIs, you should build the documentation (e.g. with Sphinx, MkDocs, 
-Doxygen, ...) and host it on a web server. List The Docs does not actually provides 
-documentation hosting services.
+Doxygen, ...) and host it on a web server. List The Docs does not actuallt provides 
+docuemntation hosting services.
 
 #### Collect documentations in List The Docs
 
@@ -69,31 +69,36 @@ it in List The Docs:
 
 Adding a project to List The Docs can be done using the following REST API:
 
-    import requests
+``` python
+import requests
 
-    requests.post(
-        'http://localhost:5000/api/v1/projects', 
-        json={
-            'name': 'project-name',
-            'description': 'The description of the project',
-        }
-    )
+response = requests.post(
+    'http://localhost:5000/api/v1/projects', 
+    json={
+        'title': 'Project Title',
+        'description': 'The description of the project',
+    }
+)
 
+# The response contains the `name` of the project
+```
 
 ##### Add a documentation version link to List The Docs
 
 Adding a version for a project documentation to List The Docs can be done 
 using the following REST API:
 
-    import requests
+``` python
+import requests
 
-    requests.post(
-        'http://localhost:5000/api/v1/projects/<project-name>/versions', 
-        json={
-            'name': '1.0.0',
-            'url': 'http://www.example.com/doc/1.0.0/index.html',
-        }
-    )
+requests.post(
+    'http://localhost:5000/api/v1/projects/<project-name>/versions', 
+    json={
+        'name': '1.0.0',
+        'url': 'http://www.example.com/doc/1.0.0/index.html',
+    }
+)
+```
 
 
 ### Python Client
@@ -101,11 +106,15 @@ using the following REST API:
 To simplify the management of the projects, List The Docs provides a 
 simple Python client:
 
-    from listthedocs.client import ListTheDocs, Project, Version
+``` python
+from listthedocs.client import ListTheDocs, Project, Version
 
-    client = ListTheDocs()
-    client.add_project(Project('project-name', 'description'))
-    client.add_version(
-        'project-name', 
-        Version('1.0.0', 'http://www.example.com/doc/1.0.0/index.html')
-    )
+client = ListTheDocs()
+project = client.add_project(
+    Project(title='Project Title', description='description')
+)
+client.add_version(
+    project, 
+    Version('1.0.0', 'http://www.example.com/doc/1.0.0/index.html')
+)
+```

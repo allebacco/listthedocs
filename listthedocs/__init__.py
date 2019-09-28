@@ -5,7 +5,7 @@ from flask import Flask
 from .client import ListTheDocs
 
 
-__version__ = '2.0.0'
+__version__ = '2.0.1'
 
 
 def create_app(override_config: dict=None):
