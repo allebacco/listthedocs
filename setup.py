@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='listthedocs',
-    version='1.0.3',
+    version='1.0.4',
     description='List your documentations',
     author='Alessandro Bacchini',
     author_email='allebacco@gmail.com',
