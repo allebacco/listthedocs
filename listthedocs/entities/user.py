@@ -10,11 +10,8 @@ from .utils import generate_api_key
 @unique
 class Roles(Enum):
 
-    UPDATE_PROJECT = 'UPDATE_PROJECT'
-    REMOVE_PROJECT = 'REMOVE_PROJECT'
-    ADD_VERSION = 'ADD_VERSION'
-    UPDATE_VERSION = 'UPDATE_VERSION'
-    REMOVE_VERSION = 'REMOVE_VERSION'
+    PROJECT_MANAGER = 'PROJECT_MANAGER'
+    VERSION_MANAGER = 'VERSION_MANAGER'
 
     @staticmethod
     def is_valid(name: str) -> bool:
@@ -78,6 +75,6 @@ class Role(db.Model, Entity):
     def to_json(self) -> dict:
         return {
             'role_name': self.name,
-            'project_name': self.project,
+            'project_code': self.project,
             'created_at': self.created_at.isoformat()
         }

@@ -67,61 +67,67 @@ def test_get_projects_where_none_exists(ltd_client: ListTheDocs):
 
 def test_add_project_creates_and_returns_the_project(ltd_client: ListTheDocs):
 
-    project = ltd_client.add_project(Project('test_project', 'A very long string'))
+    project = ltd_client.add_project(Project(title='test_project', description='A very long string'))
 
-    assert project.name == 'test_project'
+    assert project.code == 'test_project'
+    assert project.title == 'test_project'
     assert project.description == 'A very long string'
     assert project.logo is None
 
 
 def test_get_project_returns_the_project(ltd_client: ListTheDocs):
 
-    ltd_client.add_project(Project('test_project', 'A very long string'))
+    ltd_client.add_project(Project(title='test_project', description='A very long string'))
 
     project = ltd_client.get_project('test_project')
-    assert project.name == 'test_project'
+    assert project.code == 'test_project'
+    assert project.title == 'test_project'
     assert project.description == 'A very long string'
     assert project.logo is None
 
 
 def test_get_projects_returns_all_the_projects(ltd_client: ListTheDocs):
 
-    ltd_client.add_project(Project('test_project1', 'description1'))
-    ltd_client.add_project(Project('test_project2', 'description2', logo='img.png'))
+    ltd_client.add_project(Project(title='test_project1', description='description1'))
+    ltd_client.add_project(Project(title='test_project2', description='description2', logo='img.png'))
 
     projects = ltd_client.get_projects()
     assert isinstance(projects, tuple)
     assert len(projects) == 2
-    assert projects[0].name == 'test_project1'
+    assert projects[0].code == 'test_project1'
+    assert projects[0].title == 'test_project1'
     assert projects[0].description == 'description1'
     assert projects[0].logo is None
-    assert projects[1].name == 'test_project2'
+    assert projects[1].code == 'test_project2'
+    assert projects[1].title == 'test_project2'
     assert projects[1].description == 'description2'
     assert projects[1].logo == 'img.png'
 
 
 def test_update_project_description(ltd_client: ListTheDocs):
 
-    ltd_client.add_project(Project('test_project1', 'description1'))
+    ltd_client.add_project(Project(title='test_project1', description='description1'))
 
     project = ltd_client.update_project('test_project1', description='new description')
-    assert project.name == 'test_project1'
+    assert project.code == 'test_project1'
+    assert project.title == 'test_project1'
     assert project.description == 'new description'
 
 
 def test_update_project_logo(ltd_client: ListTheDocs):
 
-    ltd_client.add_project(Project('test_project1', 'description1'))
+    ltd_client.add_project(Project(title='test_project1', description='description1'))
 
     project = ltd_client.update_project('test_project1', logo='logo.jpg')
-    assert project.name == 'test_project1'
+    assert project.code == 'test_project1'
+    assert project.title == 'test_project1'
     assert project.description == 'description1'
     assert project.logo == 'logo.jpg'
 
 
 def test_delete_project(ltd_client: ListTheDocs):
 
-    ltd_client.add_project(Project('test_project1', 'description1'))
+    ltd_client.add_project(Project(title='test_project1', description='description1'))
 
     ltd_client.add_version('test_project1', Version('1.0.0', 'www.example.com/index.html'))
 
@@ -133,11 +139,12 @@ def test_delete_project(ltd_client: ListTheDocs):
 
 def test_add_version(ltd_client: ListTheDocs):
 
-    ltd_client.add_project(Project('test_project1', 'description1'))
+    ltd_client.add_project(Project(title='test_project1', description='description1'))
 
     project = ltd_client.add_version('test_project1', Version('1.0.0', 'www.example.com/index.html'))
 
-    assert project.name == 'test_project1'
+    assert project.code == 'test_project1'
+    assert project.title == 'test_project1'
     assert project.description == 'description1'
     assert project.logo is None
     assert isinstance(project.versions, (tuple, list))
@@ -148,7 +155,7 @@ def test_add_version(ltd_client: ListTheDocs):
 
 def test_remove_version(ltd_client: ListTheDocs):
 
-    ltd_client.add_project(Project('test_project1', 'description1'))
+    ltd_client.add_project(Project(title='test_project1', description='description1'))
 
     # Add multiple versions
     ltd_client.add_version('test_project1', Version('1.0.0', 'www.example.com/1.0.0/index.html'))
@@ -158,7 +165,8 @@ def test_remove_version(ltd_client: ListTheDocs):
     ltd_client.delete_version('test_project1', '1.0.0')
 
     project = ltd_client.get_project('test_project1')
-    assert project.name == 'test_project1'
+    assert project.code == 'test_project1'
+    assert project.title == 'test_project1'
     assert project.description == 'description1'
     assert len(project.versions) == 1
     assert project.versions[0].name == '2.0.0'
@@ -167,7 +175,7 @@ def test_remove_version(ltd_client: ListTheDocs):
 
 def test_update_version_link(ltd_client: ListTheDocs):
 
-    ltd_client.add_project(Project('test_project1', 'description1'))
+    ltd_client.add_project(Project(title='test_project1', description='description1'))
 
     # Add multiple versions
     ltd_client.add_version('test_project1', Version('1.0.0', 'www.example.com/1.0.0/index.html'))
@@ -176,7 +184,8 @@ def test_update_version_link(ltd_client: ListTheDocs):
     ltd_client.update_version('test_project1', '2.0.0', url='www.newexample.com/2.0.0/index.html')
 
     project = ltd_client.get_project('test_project1')
-    assert project.name == 'test_project1'
+    assert project.code == 'test_project1'
+    assert project.title == 'test_project1'
     assert project.description == 'description1'
     assert len(project.versions) == 2
     assert project.versions[0].name == '1.0.0'
@@ -236,21 +245,21 @@ def test_add_role_to_user(ltd_client: ListTheDocs):
 
     ltd_client.add_project(Project('test_project', 'empty description'))
 
-    ltd_client.add_role('root', Role(role_name='UPDATE_PROJECT', project_name='test_project'))
+    ltd_client.add_role('root', Role(role_name='PROJECT_MANAGER', project_code='test_project'))
 
     roles = ltd_client.get_roles('root')
     assert isinstance(roles, list)
     assert isinstance(roles[0], Role)
-    assert roles[0].role_name == 'UPDATE_PROJECT'
-    assert roles[0].project_name == 'test_project'
+    assert roles[0].role_name == 'PROJECT_MANAGER'
+    assert roles[0].project_code == 'test_project'
 
 
 def test_remove_role_from_user(ltd_client: ListTheDocs):
 
     ltd_client.add_project(Project('test_project', 'empty description'))
 
-    ltd_client.add_role('root', Role(role_name='UPDATE_PROJECT', project_name='test_project'))
-    ltd_client.remove_role('root', Role(role_name='UPDATE_PROJECT', project_name='test_project'))
+    ltd_client.add_role('root', Role(role_name='PROJECT_MANAGER', project_code='test_project'))
+    ltd_client.remove_role('root', Role(role_name='PROJECT_MANAGER', project_code='test_project'))
 
     roles = ltd_client.get_roles('root')
     assert isinstance(roles, list)

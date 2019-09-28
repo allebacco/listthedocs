@@ -16,6 +16,13 @@ class MissingJSONField(BadRequest):
         self.description = "Missing '{}' field".format(field_name)
 
 
+class InvalidProjectCode(BadRequest):
+
+    def __init__(self, code: str):
+        self.description = "Code '{}' is invalid for project.".format(code)
+        self.description += " Only a-z, 0-9, '-' and '_' characters are allowed. Minimum 3 characters."
+
+
 class InternalError(InternalServerError):
 
     def __init__(self, description: str):

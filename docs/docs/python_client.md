@@ -18,6 +18,7 @@ The ``Project`` entity has the following fields:
 | Field       | Type  | Description |
 |:-----------:|:-----:|:-----------:|
 | name        | *str* | The name of the project |
+| title       | *str* | The title of the project |
 | description | *str* | The description of the project. Custom HTML is allowed. |
 | logo        | *str* | The Logo of the project (optional). |
 | versions    | *tuple[Version]* | The list of docuemntation versions |
@@ -57,7 +58,9 @@ from listthedocs.client import ListTheDocs, Project
 client = ListTheDocs()
 
 # Add a project
-project = client.add_project(Project('Project-Name', 'A long description'))
+project = client.add_project(
+    Project(title='Project-Name', description='A long description')
+)
 
 print(project)
 ```
@@ -73,7 +76,7 @@ from listthedocs.client import ListTheDocs, Project
 client = ListTheDocs()
 
 # Read a project
-project = client.get_project('Project-Name')
+project = client.get_project('project-name')
 
 print(project)
 ```
@@ -109,7 +112,7 @@ project = # ... Create Project-Name project
 
 # update both logo and description
 project = client.update_project(
-    'Project-Name', 
+    project, 
     description='new description',
     logo='http://www.example.com/log.png'
 )
@@ -130,7 +133,7 @@ client = ListTheDocs()
 project = # ... Create Project-Name project
 
 # Remove the project
-project = client.delete_project('Project-Name')
+project = client.delete_project(project)
 ```
 
 ### Adding a new documentation Version to a Project
@@ -148,7 +151,7 @@ project = # ... Create Project-Name project
 
 # Add a project version
 project = client.add_version(
-    'Project-Name', 
+    project, 
     Version('1.0.0', 'http://www.example.com/doc/1.0.0/index.html')
 )
 ```
@@ -175,7 +178,7 @@ project = # ... Add a project version 1.0.0
 
 # Update the project version URL
 project = client.update_version(
-    'Project-Name', '1.0.0', 
+    project, '1.0.0', 
     url='http://www.example.com/new_doc/1.0.0/index.html'
 )
 ```
@@ -194,5 +197,5 @@ project = # ... Create Project-Name project
 project = # ... Add a project version 1.0.0
 
 # Delete project version
-project = client.delete_version('Project-Name', '1.0.0')
+project = client.delete_version(project, '1.0.0')
 ```

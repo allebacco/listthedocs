@@ -22,29 +22,30 @@ def home():
     )
 
 
-@webui.route('/<project_name>/latest/')
-def latest_root(project_name):
-    return latest(project_name, '')
+@webui.route('/<project_code>/<version_name>/')
+def doc_link_root(project_code, version_name):
+    return doc_link(project_code, version_name, '')
 
 
-@webui.route('/<project_name>/latest/<path:path>')
-def latest(project_name, path):
-    project = database.get_project(project_name)
+@webui.route('/<project_code>/<version_name>/<path:path>')
+def doc_link(project_code, version_name, path):
+    project = database.get_project(project_code)
 
     if project is None:
         abort(404)
 
-    latest_version = project.get_latest_version()
-    if latest_version is None:
+    if version_name == 'latest':
+        version = project.get_latest_version()
+    else:
+        version = project.get_version(version_name)
+    if version is None:
         abort(404)
 
-    latestindex = latest_version.url
+    url = version.url
     if path:
-        # Remove 'index.html' for doc url
-        if latestindex.endswith('index.html'):
-            latestindex = latestindex[:-len('/index.html')]
-        latestlink = '%s/%s' % (latestindex, path)
-    else:
-        latestlink = latestindex
+        # Remove 'index.html' for doc url (if present)
+        if url.endswith('index.html'):
+            url = url[:-len('/index.html')]
+        url = '%s/%s' % (url, path)
 
-    return redirect(latestlink)
+    return redirect(url)

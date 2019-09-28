@@ -1,7 +1,12 @@
+import re
+
 from flask import Response, json as flask_json, request
 
 from ..entities import Entity
-from .exceptions import InvalidJSONBody, MissingJSONField
+from .exceptions import InvalidJSONBody, MissingJSONField, InvalidProjectCode
+
+
+PROJECT_CODE_REGEX = re.compile(r"^[a-z0-9\-_]+$")
 
 
 def json_response(code: int, *, json: 'dict or Entity or list[Entity]') -> Response:
@@ -54,3 +59,19 @@ def ensure_json_request_fields(json_body: dict, field_names: tuple):
     for field_name in field_names:
         if field_name not in json_body:
             raise MissingJSONField(field_name)
+
+
+def validate_project_code(code: str):
+    if len(code) < 3 or not PROJECT_CODE_REGEX.fullmatch(code):
+        raise InvalidProjectCode(code)
+
+
+def create_project_code(title: str) -> str:
+    code = ''
+    for c in title:
+        if c.isalnum() or c in ('_', '-'):
+            code += c
+        else:
+            code += '-'
+
+    return code.lower()

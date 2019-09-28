@@ -5,7 +5,7 @@ from flask import Flask
 from .client import ListTheDocs
 
 
-__version__ = '1.0.4'
+__version__ = '2.0.0'
 
 
 def create_app(override_config: dict=None):
@@ -20,7 +20,7 @@ def create_app(override_config: dict=None):
         ROOT_API_KEY='ROOT-API-KEY',
         LOGIN_DISABLED=False,
 
-        COPYRIGHT='<a href="https://allebacco.github.io/listthedocs/">List The Docs</a>',
+        COPYRIGHT='Powered by <a href="https://allebacco.github.io/listthedocs/">List The Docs</a>',
         TITLE='Software documentation',
         HEADER="<h2>Software documentation</h2>",
         READONLY=False,

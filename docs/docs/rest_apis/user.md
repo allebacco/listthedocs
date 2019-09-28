@@ -19,7 +19,7 @@ To authenticate as *root* user, you should use the API-Key set in the
 It is possible to add a new user with the following call:
 
 ```http
-POST /api/v1/users HTTP/1.1
+POST /api/v2/users HTTP/1.1
 Content-Type: application/json
 Api-Key: f9bf78b9a18ce6d46a0cd2b0b86df9da
 
@@ -64,7 +64,7 @@ The API-Key that the new user should use for authentication is in the
 It is possible to read an user using the following call:
 
 ```http
-GET /api/v1/users/bar HTTP/1.1
+GET /api/v2/users/bar HTTP/1.1
 Content-Type: application/json
 Api-Key: f9bf78b9a18ce6d46a0cd2b0b86df9da
 ```
@@ -96,7 +96,7 @@ Content-Type: application/json
 It is possible to read all the users using the following call:
 
 ```http
-GET /api/v1/users HTTP/1.1
+GET /api/v2/users HTTP/1.1
 Content-Type: application/json
 Api-Key: f9bf78b9a18ce6d46a0cd2b0b86df9da
 ```
@@ -139,23 +139,25 @@ Content-Type: application/json
 
 ## Roles
 
+The roles are used when the [security](../security.md) is enabled.
+
 ### Adding roles to user
 
 It is possible to add a roles to a user using the following call:
 
 ```http
-PATCH /api/v1/users/bar/roles HTTP/1.1
+PATCH /api/v2/users/bar/roles HTTP/1.1
 Content-Type: application/json
 Api-Key: f9bf78b9a18ce6d46a0cd2b0b86df9da
 
 [
     {
-        "role_name": "ADD_VERSION",
-        "project_name": "project1"
+        "role_name": "PROJECT_MANAGER",
+        "project_code": "project1"
     },
     {
-        "role_name": "UPDATE_PROJECT",
-        "project_name": "project2"
+        "role_name": "VERSION_MANAGER",
+        "project_code": "project2"
     }
 ]
 ```
@@ -176,18 +178,18 @@ Content-Type: application/json
 It is possible to remove a roles from a user using the following call:
 
 ```http
-DELETE /api/v1/users/bar/roles HTTP/1.1
+DELETE /api/v2/users/bar/roles HTTP/1.1
 Content-Type: application/json
 Api-Key: f9bf78b9a18ce6d46a0cd2b0b86df9da
 
 [
     {
-        "role_name": "ADD_VERSION",
-        "project_name": "project1"
+        "role_name": "PROJECT_MANAGER",
+        "project_code": "project1"
     },
     {
-        "role_name": "UPDATE_PROJECT",
-        "project_name": "project2"
+        "role_name": "VERSION_MANAGER",
+        "project_code": "project2"
     }
 ]
 ```
@@ -208,7 +210,7 @@ Content-Type: application/json
 It is possible to read the roles of an user using the following call:
 
 ```http
-GET /api/v1/users/bar/roles HTTP/1.1
+GET /api/v2/users/bar/roles HTTP/1.1
 Content-Type: application/json
 Api-Key: f9bf78b9a18ce6d46a0cd2b0b86df9da
 ```
@@ -221,12 +223,12 @@ Content-Type: application/json
 
 [
     {
-        "role_name": "ADD_VERSION",
-        "project_name": "project1"
+        "role_name": "PROJECT_MANAGER",
+        "project_code": "project1"
     },
     {
-        "role_name": "UPDATE_PROJECT",
-        "project_name": "project2"
+        "role_name": "VERSION_MANAGER",
+        "project_code": "project2"
     }
 ]
 ```
