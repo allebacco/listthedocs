@@ -259,3 +259,11 @@ Content-Type: application/json
     "versions": []
 }
 ```
+
+## Documentation links
+
+The links to the documentation version of each project is available
+at the following URLs:
+
+* `/<project_code>/<version_name>/`: link to a documentation version of a project
+* `/<project_code>/latest/`: link to the latest documentation version of a project
