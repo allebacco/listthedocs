@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='listthedocs',
-    version='2.0.0',
+    version='2.0.1',
     author='Alessandro Bacchini',
     author_email='allebacco@gmail.com',
     description='List your documentations',
