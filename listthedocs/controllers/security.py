@@ -50,7 +50,7 @@ def fail_if_readonly(controller_func):
     return decorated_view
 
 
-def ensure_role_on_project(*, role):
+def ensure_role_on_project(*, role, allowed_for_admin=True):
 
     def wrap(controller_func):
 
@@ -66,8 +66,9 @@ def ensure_role_on_project(*, role):
             if current_user._get_current_object() is None:
                 raise UserUnauthorized()
 
-            if not database.check_user_has_role(current_user.name, role.value, project_name):
-                raise ForbiddenAction()
+            if not (current_user.is_admin and allowed_for_admin):
+                if not database.check_user_has_role(current_user.name, role.value, project_name):
+                    raise ForbiddenAction()
 
             return controller_func(project_name, *args, **kwargs)
 
