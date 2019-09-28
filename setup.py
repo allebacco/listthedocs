@@ -8,6 +8,12 @@ setup(
     author_email='allebacco@gmail.com',
     url='https://github.com/allebacco/listthedocs',
     packages=find_packages(),
+    package_data={'listthedocs': [
+            'listthedocs/templates/*.*',
+            'listthedocs/static/styles/*.*',
+        ]
+    },
+    include_package_data=True,
     install_requires=[
         'natsort',
         'requests',
