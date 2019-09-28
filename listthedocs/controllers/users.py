@@ -80,19 +80,19 @@ def add_user_roles(user_name):
         raise InvalidJSONBody()
 
     for json_role in json_data:
-        ensure_json_request_fields(json_role, ('role_name', 'project_name'))
+        ensure_json_request_fields(json_role, ('role_name', 'project_code'))
 
         role_name = json_role['role_name']
-        project_name = json_role['project_name']
+        project_code = json_role['project_code']
         if not Roles.is_valid(role_name):
             return json_response(400, json={'message': 'Invalid role name'})
 
         try:
-            database.add_role_to_user(user.name, role_name, project_name)
+            database.add_role_to_user(user.name, role_name, project_code)
         except database.UserNotFound:
             raise EntityNotFound('user', user_name)
         except database.ProjectNotFound:
-            raise EntityNotFound('project', project_name)
+            raise EntityNotFound('project', project_code)
 
     return json_response(200, json={'message': 'Roles added to user'})
 
@@ -109,18 +109,18 @@ def remove_user_roles(user_name):
         raise InvalidJSONBody()
 
     for json_role in json_data:
-        ensure_json_request_fields(json_role, ('role_name', 'project_name'))
+        ensure_json_request_fields(json_role, ('role_name', 'project_code'))
 
         role_name = json_role['role_name']
-        project_name = json_role['project_name']
+        project_code = json_role['project_code']
         if not Roles.is_valid(role_name):
             return json_response(400, json={'message': 'Invalid role name'})
 
         try:
-            database.remove_role_from_user(user.name, role_name, project_name)
+            database.remove_role_from_user(user.name, role_name, project_code)
         except database.UserNotFound:
             raise EntityNotFound('user', user_name)
         except database.ProjectNotFound:
-            raise EntityNotFound('project', project_name)
+            raise EntityNotFound('project', project_code)
 
     return json_response(200, json={'message': 'Roles removed from user'})

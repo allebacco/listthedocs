@@ -22,7 +22,7 @@ def test_add_project_creates_and_returns_the_project(client):
     assert response.status_code == 201
 
     project = response.get_json()
-    assert project['name'] == 'test-project'
+    assert project['code'] == 'test-project'
     assert project['title'] == 'Test Project'
     assert project['description'] == 'A very long string'
     assert 'logo' in project
@@ -37,7 +37,7 @@ def test_get_project_returns_the_project(client):
     assert response.status_code == 200
 
     project = response.get_json()
-    assert project['name'] == 'test-project'
+    assert project['code'] == 'test-project'
     assert project['title'] == 'Test Project'
     assert project['description'] == 'A very long string'
     assert 'logo' in project
@@ -56,10 +56,10 @@ def test_get_projects_returns_all_the_projects(client):
 
     projects = response.get_json()
     assert isinstance(projects, list)
-    assert projects[0]['name'] == 'test-project-1'
+    assert projects[0]['code'] == 'test-project-1'
     assert projects[0]['title'] == 'Test Project 1'
     assert projects[0]['description'] == 'Tests description 1'
-    assert projects[1]['name'] == 'test-project-2'
+    assert projects[1]['code'] == 'test-project-2'
     assert projects[1]['title'] == 'Test Project 2'
     assert projects[1]['description'] == 'Tests description 2'
 
@@ -73,8 +73,7 @@ def test_update_project_description(client):
     assert response.status_code == 200
 
     project = response.get_json()
-    assert 'name' in project
-    assert project['name'] == 'test_project'
+    assert project['code'] == 'test_project'
     assert project['title'] == 'test_project'
     assert project['description'] == 'Short string'
     assert 'logo' in project
@@ -89,7 +88,7 @@ def test_update_project_logo(client):
     assert response.status_code == 200
 
     project = response.get_json()
-    assert project['name'] == 'test_project'
+    assert project['code'] == 'test_project'
     assert project['title'] == 'test_project'
     assert project['description'] == 'A very long string'
     assert project['logo'] == 'image.jpg'
@@ -104,7 +103,7 @@ def test_update_project_title(client):
     assert response.status_code == 200
 
     project = response.get_json()
-    assert project['name'] == 'test_project'
+    assert project['code'] == 'test_project'
     assert project['title'] == 'Test Project'
     assert project['description'] == 'A very long string'
     assert 'logo' in project
@@ -142,7 +141,7 @@ def test_add_version(client):
     assert response.status_code == 201
 
     project = response.get_json()
-    assert project['name'] == 'test_project'
+    assert project['code'] == 'test_project'
     assert project['title'] == 'test_project'
     assert project['description'] == 'A very long string'
     assert 'logo' in project
@@ -177,7 +176,7 @@ def test_remove_version(client):
     assert response.status_code == 200
 
     project = response.get_json()
-    assert project['name'] == 'test_project'
+    assert project['code'] == 'test_project'
     assert project['title'] == 'test_project'
     assert project['description'] == 'A very long string'
     assert 'logo' in project
@@ -213,7 +212,7 @@ def test_update_version_link(client):
     assert response.status_code == 200
 
     project = response.get_json()
-    assert project['name'] == 'test_project'
+    assert project['code'] == 'test_project'
     assert project['title'] == 'test_project'
     assert project['description'] == 'A very long string'
     assert 'logo' in project

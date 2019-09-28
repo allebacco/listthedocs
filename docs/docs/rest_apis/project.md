@@ -26,7 +26,7 @@ Api-Key: f9bf78b9a18ce6d46a0cd2b0b86df9da
 | Field       | Type  | Description |
 |:-----------:|:-----:|:-----------:|
 | title       | *str* | The title of the project |
-| name        | *str* | The name of the project |
+| code        | *str* | The unique code of the project |
 | description | *str* | The description of the project. Custom HTML is allowed. |
 | logo        | *str* | The Logo of the project (optional). |
 
@@ -40,7 +40,7 @@ Content-Type: application/json
 
 {
     "title": "Project Title",
-    "name": "project-title",
+    "code": "project-title",
     "description": "A not too long description of the project",
     "logo": "http://www.projectname.com/logo.png",
     "versions": []
@@ -49,7 +49,7 @@ Content-Type: application/json
 
 ### Reading a Project
 
-The following call will read a project named *project-title*:
+The following call will read a project with code *project-title*:
 
 ``` http
 GET /api/v2/projects/project-title HTTP/1.1
@@ -63,7 +63,7 @@ Content-Type: application/json
 
 {
     "title": "Project Title",
-    "name": "project-title",
+    "code": "project-title",
     "description": "A not too long description of the project",
     "logo": "http://www.projectname.com/logo.png",
     "versions": []
@@ -89,14 +89,14 @@ Content-Type: application/json
 [
     {
         "title": "Project Title 1",
-        "name": "project-title-1",
+        "code": "project-title-1",
         "description": "A not too long description of the project 1",
         "logo": "http://www.projectname1.com/logo.png",
         "versions": []
     },
     {
         "title": "Project Title 2",
-        "name": "project-title-2",
+        "code": "project-title-2",
         "description": "A not too long description of the project 2",
         "logo": "http://www.projectname2.com/logo.png",
         "versions": []
@@ -130,7 +130,7 @@ Content-Type: application/json
 
 {
     "title": "Project Title",
-    "name": "project-title",
+    "code": "project-title",
     "description": "An optional new description",
     "logo": "http://www.projectname.com/an-optional-new-logo.png",
     "versions": []
@@ -172,7 +172,7 @@ Api-Key: f9bf78b9a18ce6d46a0cd2b0b86df9da
 
 | Field       | Type  | Description |
 |:-----------:|:-----:|:-----------:|
-| name        | *str* | The name of the docuemtation version (e.g. *1.0.0*). |
+| name        | *str* | The name of the documentation version (e.g. *1.0.0*). |
 | url         | *str* | The url to the to the documentation files. |
 
 The response has the following format:
@@ -183,7 +183,7 @@ Content-Type: application/json
 
 {
     "title": "Project Title",
-    "name": "project-title",
+    "code": "project-title",
     "description": "A not too long description of the project",
     "logo": "http://www.projectname.com/logo.png",
     "versions": [
@@ -224,7 +224,7 @@ Content-Type: application/json
 
 {
     "title": "Project Title",
-    "name": "project-title",
+    "code": "project-title",
     "description": "A not too long description of the project",
     "logo": "http://www.projectname.com/logo.png",
     "versions": [
@@ -253,7 +253,7 @@ Content-Type: application/json
 
 {
     "title": "Project Title",
-    "name": "project-title",
+    "code": "project-title",
     "description": "A not too long description of the project",
     "logo": "http://www.projectname.com/logo.png",
     "versions": []

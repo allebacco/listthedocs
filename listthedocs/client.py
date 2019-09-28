@@ -29,7 +29,7 @@ class Project:
 
     title = String()
     description = String()
-    name = String(default=None)
+    code = String(default=None)
     logo = String(default=None)
     versions = ListOf(Version, default=tuple())
 
@@ -84,7 +84,7 @@ class Roles(Enum):
 class Role:
 
     role_name = EnumString(Roles)
-    project_name = String()
+    project_code = String()
     created_at = DateTime(default=None)
 
     def to_json(self) -> dict:
@@ -104,9 +104,9 @@ class User:
         return attr.asdict(self)
 
 
-def _get_project_name(project: Union[Project, str]) -> str:
+def _get_project_code(project: Union[Project, str]) -> str:
     if isinstance(project, Project):
-        return project.name
+        return project.code
     return project
 
 
@@ -154,7 +154,7 @@ class ListTheDocs:
     def update_project(self,
                        project: Union[Project, str], *,
                        title: str = None, description: str = None, logo: str = None) -> Project:
-        name = _get_project_name(project)
+        name = _get_project_code(project)
 
         endpoint_url = self._base_url + '/api/v2/projects/{}'.format(name)
 
@@ -173,15 +173,15 @@ class ListTheDocs:
         return Project(**response.json())
 
     def delete_project(self, project: Union[Project, str]):
-        name = _get_project_name(project)
+        name = _get_project_code(project)
         endpoint_url = self._base_url + '/api/v2/projects/{}'.format(name)
         response = self._session.delete(endpoint_url)
         if response.status_code != 200:
             raise RuntimeError('Error during removing project')
 
     def add_version(self, project: Union[Project, str], version: Version) -> Project:
-        project_name = _get_project_name(project)
-        endpoint_url = self._base_url + '/api/v2/projects/{}/versions'.format(project_name)
+        project_code = _get_project_code(project)
+        endpoint_url = self._base_url + '/api/v2/projects/{}/versions'.format(project_code)
         response = self._session.post(endpoint_url, json=version.to_json())
         if response.status_code != 201:
             raise RuntimeError('Error during creating project version')
@@ -189,8 +189,8 @@ class ListTheDocs:
         return Project(**response.json())
 
     def delete_version(self, project: Union[Project, str], version_name: str) -> Project:
-        project_name = _get_project_name(project)
-        endpoint_url = self._base_url + '/api/v2/projects/{}/versions/{}'.format(project_name, version_name)
+        project_code = _get_project_code(project)
+        endpoint_url = self._base_url + '/api/v2/projects/{}/versions/{}'.format(project_code, version_name)
         response = self._session.delete(endpoint_url)
         if response.status_code != 200:
             raise RuntimeError('Error during deleting version ' + version_name)
@@ -198,8 +198,8 @@ class ListTheDocs:
         return Project(**response.json())
 
     def update_version(self, project: Union[Project, str], version_name: str, *, url: str) -> Project:
-        project_name = _get_project_name(project)
-        endpoint_url = self._base_url + '/api/v2/projects/{}/versions/{}'.format(project_name, version_name)
+        project_code = _get_project_code(project)
+        endpoint_url = self._base_url + '/api/v2/projects/{}/versions/{}'.format(project_code, version_name)
 
         json = dict()
         if url is not None:

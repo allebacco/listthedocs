@@ -22,14 +22,14 @@ def home():
     )
 
 
-@webui.route('/<project_name>/latest/')
-def latest_root(project_name):
-    return latest(project_name, '')
+@webui.route('/<project_code>/latest/')
+def latest_root(project_code):
+    return latest(project_code, '')
 
 
-@webui.route('/<project_name>/latest/<path:path>')
-def latest(project_name, path):
-    project = database.get_project(project_name)
+@webui.route('/<project_code>/latest/<path:path>')
+def latest(project_code, path):
+    project = database.get_project(project_code)
 
     if project is None:
         abort(404)

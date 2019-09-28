@@ -82,7 +82,7 @@ def test_add_and_remove_user_roles(client):
     roles_to_add = [
         {
             'role_name': 'PROJECT_MANAGER',
-            'project_name': 'test_project1'
+            'project_code': 'test_project1'
         },
     ]
     response = client.patch(
@@ -98,13 +98,13 @@ def test_add_and_remove_user_roles(client):
 
     response = client.patch(
         '/api/v2/users/new_user/roles',
-        json=[{'role_name': 'VERSION_MANAGER', 'project_name': 'test_project2'}],
+        json=[{'role_name': 'VERSION_MANAGER', 'project_code': 'test_project2'}],
     )
     assert response.status_code == 200
 
     response = client.delete(
         '/api/v2/users/new_user/roles',
-        json=[{'role_name': 'VERSION_MANAGER', 'project_name': 'test_project2'}],
+        json=[{'role_name': 'VERSION_MANAGER', 'project_code': 'test_project2'}],
     )
     assert response.status_code == 200
 

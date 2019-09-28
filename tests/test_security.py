@@ -49,7 +49,7 @@ def client(app_with_security):
 
 
 def add_role_on_project(client: AdminClient, user: str, project: str, role: str):
-    roles = [{'role_name': role, 'project_name': project}]
+    roles = [{'role_name': role, 'project_code': project}]
     response = client.patch('/api/v2/users/' + user + '/roles', json=roles)
     assert response.status_code == 200
 

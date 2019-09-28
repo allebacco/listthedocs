@@ -1,7 +1,8 @@
 import pytest
 
-from listthedocs.controllers.utils import validate_project_name, create_project_name
-from listthedocs.controllers.exceptions import InvalidProjectName
+from listthedocs.controllers.utils import validate_project_code, create_project_code
+from listthedocs.controllers.exceptions import InvalidProjectCode
+
 
 @pytest.mark.parametrize('name,is_valid', [
     ('project', True),
@@ -17,13 +18,13 @@ from listthedocs.controllers.exceptions import InvalidProjectName
     ('proj:ect', False),
     ('proj;ect', False),
 ])
-def test_validate_project_name(name, is_valid):
+def test_validate_project_code(name, is_valid):
 
     if is_valid:
-        validate_project_name(name)
+        validate_project_code(name)
     else:
-        with pytest.raises(InvalidProjectName):
-            validate_project_name(name)
+        with pytest.raises(InvalidProjectCode):
+            validate_project_code(name)
 
 
 @pytest.mark.parametrize('name,expected', [
@@ -35,6 +36,6 @@ def test_validate_project_name(name, is_valid):
     ('proj:ect', 'proj-ect'),
     ('proj;ect', 'proj-ect'),
 ])
-def test_create_project_name(name, expected):
+def test_create_project_code(name, expected):
 
-    assert expected == create_project_name(name)
+    assert expected == create_project_code(name)

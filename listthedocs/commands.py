@@ -16,13 +16,13 @@ def add_listthedocs_project():
         return
 
     project = Project(
-        title='List The Docs', description="Documentation of List The Docs", name='list-the-docs'
+        title='List The Docs', description="Documentation of List The Docs", code='list-the-docs'
     )
 
     project = database.add_project(project)
     print('Added project', project.title)
     database.add_version(
-        project.name, Version('2.0.0', 'https://allebacco.github.io/listthedocs/')
+        project.code, Version('2.0.0', 'https://allebacco.github.io/listthedocs/')
     )
     print('Added version 2.0.0')
 

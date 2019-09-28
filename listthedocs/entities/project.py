@@ -11,7 +11,7 @@ class Project(db.Model, Entity):
     __tablename__ = 'projects'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(), nullable=False, unique=True)
+    code = db.Column(db.String(), nullable=False, unique=True)
     title = db.Column(db.String(), nullable=False, unique=True)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     description = db.Column(db.Text, nullable=False)
@@ -38,7 +38,7 @@ class Project(db.Model, Entity):
     def to_json(self) -> dict:
         self.sort_versions()
         return {
-            "name": self.name,
+            "code": self.code,
             "title": self.title,
             "description": self.description,
             "versions": [v.to_json() for v in self.versions],

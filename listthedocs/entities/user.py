@@ -75,6 +75,6 @@ class Role(db.Model, Entity):
     def to_json(self) -> dict:
         return {
             'role_name': self.name,
-            'project_name': self.project,
+            'project_code': self.project,
             'created_at': self.created_at.isoformat()
         }

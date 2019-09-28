@@ -52,14 +52,14 @@ def get_projects():
     return Project.query.all()
 
 
-def get_project(name: str) -> Project:
+def get_project(code: str) -> Project:
 
-    return Project.query.filter_by(name=name).first()
+    return Project.query.filter_by(code=code).first()
 
 
-def update_project(name: str, title: str = None, description: str = None, logo: str = None) -> Project:
+def update_project(code: str, title: str = None, description: str = None, logo: str = None) -> Project:
 
-    project = get_project(name)
+    project = get_project(code)
     if project is None:
         raise ProjectNotFound()
 
@@ -77,9 +77,9 @@ def update_project(name: str, title: str = None, description: str = None, logo: 
     return project
 
 
-def delete_project(name: str):
+def delete_project(code: str):
 
-    project = get_project(name)
+    project = get_project(code)
     if project is None:
         return
 
@@ -87,9 +87,9 @@ def delete_project(name: str):
     db.session.commit()
 
 
-def add_version(project_name: str, version: Version) -> Project:
+def add_version(project_code: str, version: Version) -> Project:
 
-    project = get_project(project_name)
+    project = get_project(project_code)
     if project is None:
         raise ProjectNotFound()
 
@@ -102,9 +102,9 @@ def add_version(project_name: str, version: Version) -> Project:
     return project
 
 
-def remove_version(project_name: str, version_name: str):
+def remove_version(project_code: str, version_name: str):
 
-    project = get_project(project_name)
+    project = get_project(project_code)
     if project is None:
         raise ProjectNotFound()
 
@@ -116,9 +116,9 @@ def remove_version(project_name: str, version_name: str):
     db.session.commit()
 
 
-def update_version(project_name: str, version_name: str, new_url: str=None):
+def update_version(project_code: str, version_name: str, new_url: str=None):
 
-    project = get_project(project_name)
+    project = get_project(project_code)
     if project is None:
         raise ProjectNotFound()
 
@@ -162,41 +162,41 @@ def get_user_for_api_key(api_key: str) -> User:
     return key.user
 
 
-def add_role_to_user(user_name, role_name, project_name):
+def add_role_to_user(user_name, role_name, project_code):
 
     user = get_user_by_name(user_name)
     if user is None:
         raise UserNotFound()
 
-    project = get_project(project_name)
+    project = get_project(project_code)
     if project is None:
         raise ProjectNotFound()
 
-    user.roles.append(Role(name=role_name, project=project_name))
+    user.roles.append(Role(name=role_name, project=project_code))
     db.session.commit()
 
 
-def remove_role_from_user(user_name, role_name, project_name):
+def remove_role_from_user(user_name, role_name, project_code):
 
     user = get_user_by_name(user_name)
     if user is None:
         raise UserNotFound()
 
     for role in user.roles:
-        if role.name == role_name and role.project == project_name:
+        if role.name == role_name and role.project == project_code:
             user.roles.remove(role)
 
     db.session.commit()
 
 
-def check_user_has_role(user_name, role_name, project_name) -> bool:
+def check_user_has_role(user_name, role_name, project_code) -> bool:
 
     user = get_user_by_name(user_name)
     if user is None:
         raise UserNotFound()
 
     for role in user.roles:
-        if role.name == role_name and role.project == project_name:
+        if role.name == role_name and role.project == project_code:
             return True
 
     return False

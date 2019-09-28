@@ -15,8 +15,8 @@
      var filter_text = $("#project-filter").val().trim().toLowerCase();
 
      var project_cards = $("#project-list").children().each(function () {
-         project_name = $(this).attr('data-project-title').toLowerCase();
-         if(fuzzy_match(project_name, filter_text) || filter_text.length == 0)
+         project_title = $(this).attr('data-project-title').toLowerCase();
+         if(fuzzy_match(project_title, filter_text) || filter_text.length == 0)
              $(this).removeClass("d-none");
          else
              $(this).addClass("d-none");

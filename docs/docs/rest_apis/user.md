@@ -153,11 +153,11 @@ Api-Key: f9bf78b9a18ce6d46a0cd2b0b86df9da
 [
     {
         "role_name": "PROJECT_MANAGER",
-        "project_name": "project1"
+        "project_code": "project1"
     },
     {
         "role_name": "VERSION_MANAGER",
-        "project_name": "project2"
+        "project_code": "project2"
     }
 ]
 ```
@@ -185,11 +185,11 @@ Api-Key: f9bf78b9a18ce6d46a0cd2b0b86df9da
 [
     {
         "role_name": "PROJECT_MANAGER",
-        "project_name": "project1"
+        "project_code": "project1"
     },
     {
         "role_name": "VERSION_MANAGER",
-        "project_name": "project2"
+        "project_code": "project2"
     }
 ]
 ```
@@ -224,11 +224,11 @@ Content-Type: application/json
 [
     {
         "role_name": "PROJECT_MANAGER",
-        "project_name": "project1"
+        "project_code": "project1"
     },
     {
         "role_name": "VERSION_MANAGER",
-        "project_name": "project2"
+        "project_code": "project2"
     }
 ]
 ```
