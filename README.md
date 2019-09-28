@@ -54,7 +54,7 @@ The service provides a set of REST APIs to manage projects and versions.
 #### Build and Host documentation
 
 Before using the APIs, you should build the documentation (e.g. with Sphinx, MkDocs, 
-Doxygen, ...) and host it on a web server. List The Docs does not actuallt provides 
+Doxygen, ...) and host it on a web server. List The Docs does not actually provides 
 documentation hosting services.
 
 #### Collect documentations in List The Docs
