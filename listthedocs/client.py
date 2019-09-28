@@ -27,15 +27,16 @@ class Project:
     """The project
     """
 
-    name = String()
+    title = String()
     description = String()
+    name = String(default=None)
     logo = String(default=None)
     versions = ListOf(Version, default=tuple())
 
     def to_json(self) -> dict:
         return attr.asdict(self)
 
-    def get_version(self, version_name) -> Version:
+    def get_version(self, version_name: str) -> Version:
         """Get a documentation version.
 
         Args:
@@ -71,11 +72,8 @@ class ApiKey:
 @unique
 class Roles(Enum):
 
-    UPDATE_PROJECT = 'UPDATE_PROJECT'
-    REMOVE_PROJECT = 'REMOVE_PROJECT'
-    ADD_VERSION = 'ADD_VERSION'
-    UPDATE_VERSION = 'UPDATE_VERSION'
-    REMOVE_VERSION = 'REMOVE_VERSION'
+    PROJECT_MANAGER = 'PROJECT_MANAGER'
+    VERSION_MANAGER = 'VERSION_MANAGER'
 
     @staticmethod
     def is_valid(name: str) -> bool:
@@ -123,7 +121,7 @@ class ListTheDocs:
             self._session.headers['Api-Key'] = api_key
 
     def add_project(self, project: Project) -> Project:
-        endpoint_url = self._base_url + '/api/v1/projects'
+        endpoint_url = self._base_url + '/api/v2/projects'
         response = self._session.post(endpoint_url, json=project.to_json())
         if response.status_code != 201:
             raise RuntimeError('Error during adding project ' + project.name)
@@ -131,7 +129,7 @@ class ListTheDocs:
         return Project(**response.json())
 
     def get_projects(self) -> 'tuple[Project]':
-        endpoint_url = self._base_url + '/api/v1/projects'
+        endpoint_url = self._base_url + '/api/v2/projects'
         response = self._session.get(endpoint_url)
         if response.status_code != 200:
             raise RuntimeError('Error during getting projects')
@@ -139,7 +137,7 @@ class ListTheDocs:
         return tuple(Project(**p) for p in response.json())
 
     def get_project(self, name) -> Project:
-        endpoint_url = self._base_url + '/api/v1/projects/{}'.format(name)
+        endpoint_url = self._base_url + '/api/v2/projects/{}'.format(name)
         response = self._session.get(endpoint_url)
         if response.status_code == 404:
             return None
@@ -148,10 +146,12 @@ class ListTheDocs:
 
         return Project(**response.json())
 
-    def update_project(self, project_name: str, *, description: str=None, logo: str=None) -> Project:
-        endpoint_url = self._base_url + '/api/v1/projects/{}'.format(project_name)
+    def update_project(self, name: str, *, title: str = None, description: str = None, logo: str = None) -> Project:
+        endpoint_url = self._base_url + '/api/v2/projects/{}'.format(name)
 
         json = dict()
+        if title is not None:
+            json['title'] = title
         if description is not None:
             json['description'] = description
         if logo is not None:
@@ -163,14 +163,14 @@ class ListTheDocs:
 
         return Project(**response.json())
 
-    def delete_project(self, project_name: str):
-        endpoint_url = self._base_url + '/api/v1/projects/{}'.format(project_name)
+    def delete_project(self, name: str):
+        endpoint_url = self._base_url + '/api/v2/projects/{}'.format(name)
         response = self._session.delete(endpoint_url)
         if response.status_code != 200:
             raise RuntimeError('Error during removing project')
 
     def add_version(self, project_name: str, version: Version) -> Project:
-        endpoint_url = self._base_url + '/api/v1/projects/{}/versions'.format(project_name)
+        endpoint_url = self._base_url + '/api/v2/projects/{}/versions'.format(project_name)
         response = self._session.post(endpoint_url, json=version.to_json())
         if response.status_code != 201:
             raise RuntimeError('Error during creating project version')
@@ -178,7 +178,7 @@ class ListTheDocs:
         return Project(**response.json())
 
     def delete_version(self, project_name: str, version_name: str) -> Project:
-        endpoint_url = self._base_url + '/api/v1/projects/{}/versions/{}'.format(project_name, version_name)
+        endpoint_url = self._base_url + '/api/v2/projects/{}/versions/{}'.format(project_name, version_name)
         response = self._session.delete(endpoint_url)
         if response.status_code != 200:
             raise RuntimeError('Error during deleting version ' + version_name)
@@ -186,7 +186,7 @@ class ListTheDocs:
         return Project(**response.json())
 
     def update_version(self, project_name: str, version_name: str, *, url: str) -> Project:
-        endpoint_url = self._base_url + '/api/v1/projects/{}/versions/{}'.format(project_name, version_name)
+        endpoint_url = self._base_url + '/api/v2/projects/{}/versions/{}'.format(project_name, version_name)
 
         json = dict()
         if url is not None:
@@ -214,7 +214,7 @@ class ListTheDocs:
         return 'data:image/png;base64,' + base64.b64encode(data).decode('utf8')
 
     def add_user(self, name, *, is_admin=False) -> User:
-        endpoint_url = self._base_url + '/api/v1/users'
+        endpoint_url = self._base_url + '/api/v2/users'
         response = self._session.post(endpoint_url, json={'name': name, 'is_admin': is_admin})
         if response.status_code != 201:
             raise RuntimeError('Error during adding user ' + name)
@@ -222,7 +222,7 @@ class ListTheDocs:
         return User(**response.json())
 
     def get_user(self, name) -> User:
-        endpoint_url = self._base_url + '/api/v1/users/' + name
+        endpoint_url = self._base_url + '/api/v2/users/' + name
         response = self._session.get(endpoint_url)
         if response.status_code == 404:
             return None
@@ -232,7 +232,7 @@ class ListTheDocs:
         return User(**response.json())
 
     def get_users(self) -> List[User]:
-        endpoint_url = self._base_url + '/api/v1/users'
+        endpoint_url = self._base_url + '/api/v2/users'
         response = self._session.get(endpoint_url)
         if response.status_code != 200:
             raise RuntimeError('Error during getting users ')
@@ -242,7 +242,7 @@ class ListTheDocs:
     def add_role(self, user: Union[str, User], role: Role):
         if isinstance(user, User):
             user = user.name
-        endpoint_url = self._base_url + '/api/v1/users/' + user + '/roles'
+        endpoint_url = self._base_url + '/api/v2/users/' + user + '/roles'
 
         response = self._session.patch(endpoint_url, json=[role.to_json()])
         if response.status_code != 200:
@@ -251,7 +251,7 @@ class ListTheDocs:
     def get_roles(self, user: Union[str, User]) -> List[Role]:
         if isinstance(user, User):
             user = user.name
-        endpoint_url = self._base_url + '/api/v1/users/' + user + '/roles'
+        endpoint_url = self._base_url + '/api/v2/users/' + user + '/roles'
 
         response = self._session.get(endpoint_url)
         if response.status_code != 200:
@@ -262,7 +262,7 @@ class ListTheDocs:
     def remove_role(self, user: Union[str, User], role: Role):
         if isinstance(user, User):
             user = user.name
-        endpoint_url = self._base_url + '/api/v1/users/' + user + '/roles'
+        endpoint_url = self._base_url + '/api/v2/users/' + user + '/roles'
 
         response = self._session.delete(endpoint_url, json=[role.to_json()])
         if response.status_code != 200:

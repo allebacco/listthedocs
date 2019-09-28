@@ -36,10 +36,9 @@ def init_app(app):
         init_root_user()
 
 
-def add_project(name: str, description: str, logo: str) -> Project:
+def add_project(project: Project) -> Project:
 
     try:
-        project = Project(name=name, description=description, logo=logo)
         db.session.add(project)
         db.session.commit()
     except IntegrityError:
@@ -58,11 +57,14 @@ def get_project(name: str) -> Project:
     return Project.query.filter_by(name=name).first()
 
 
-def update_project(name: str, description: str=None, logo: str=None) -> Project:
+def update_project(name: str, title: str = None, description: str = None, logo: str = None) -> Project:
 
     project = get_project(name)
     if project is None:
         raise ProjectNotFound()
+
+    if title is not None:
+        project.title = title
 
     if description is not None:
         project.description = description

@@ -2,25 +2,27 @@ import click
 
 from flask.cli import with_appcontext
 
-from . import database
-from .entities import Version
+from .database import database
+from .entities import Version, Project
 
 
 @click.command('add_listthedocs')
 @with_appcontext
 def add_listthedocs_project():
 
-    project = database.get_project('ListTheDocs')
+    project = database.get_project('list-the-docs')
     if project is not None:
         print('Project already exists')
         return
 
-    project = database.add_project(
-        'ListTheDocs', "Documentation of List The Docs", None
+    project = Project(
+        title='List The Docs', description="Documentation of List The Docs", name='list-the-docs'
     )
-    print('Added project', project.name)
+
+    project = database.add_project(project)
+    print('Added project', project.title)
     database.add_version(
-        project.name, Version('1.0.0', 'https://allebacco.github.io/listthedocs/')
+        project.name, Version('2.0.0', 'https://allebacco.github.io/listthedocs/')
     )
-    print('Added version 1.0.0')
+    print('Added version 2.0.0')
 
