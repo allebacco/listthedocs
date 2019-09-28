@@ -543,21 +543,21 @@
                 
                 
                 <h1 id="getting-started">Getting Started</h1>
-<p>Since List The Docs is writte using Flask it can be execute with the follwing
+<p>Since List The Docs has been developed using Flask it can be execute with the follwing
 commands:</p>
-<div class="codehilite"><pre><span></span><span class="n">export</span> <span class="n">FLASK_APP</span><span class="o">=</span><span class="n">listthedocs</span>
-<span class="n">flask</span> <span class="n">run</span>
-<span class="o">*</span> <span class="n">Running</span> <span class="k">on</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mi">127</span><span class="p">.</span><span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">.</span><span class="mi">1</span><span class="p">:</span><span class="mi">5000</span><span class="o">/</span>
+<div class="codehilite"><pre><span></span><span class="nb">export</span> <span class="nv">FLASK_APP</span><span class="o">=</span>listthedocs
+flask run
+* Running on http://127.0.0.1:5000/
 </pre></div>
 
 
 <p>For Windows commandline use:</p>
-<div class="codehilite"><pre><span></span><span class="k">set</span> <span class="n">FLASK_APP</span><span class="o">=</span><span class="n">listthedocs</span>
+<div class="codehilite"><pre><span></span><span class="k">set</span> <span class="nv">FLASK_APP</span><span class="p">=</span>listthedocs
 </pre></div>
 
 
 <p>And for Windows Powershell use:</p>
-<div class="codehilite"><pre><span></span><span class="err">$</span><span class="n">env</span><span class="p">:</span><span class="n">FLASK_APP</span><span class="o">=</span><span class="ss">&quot;listthedocs&quot;</span>
+<div class="codehilite"><pre><span></span><span class="nv">$env:FLASK_APP</span><span class="p">=</span><span class="s2">&quot;listthedocs&quot;</span>
 </pre></div>
 
 
@@ -574,7 +574,7 @@ commands:</p>
 <li><strong>TITLE</strong>: The title of the web pages.</li>
 <li><strong>HEADER</strong>: The header of the web page. HTML is allowed.</li>
 <li><strong>READONLY</strong>: Set to true to disable the write REST APIs.</li>
-<li><strong>LOGIN_DISABLED</strong>: Disable the login and security.</li>
+<li><strong>LOGIN_DISABLED</strong>: Disable the login and security. Default <code>True</code></li>
 <li><strong>ROOT_API_KEY</strong>: The Api-Key for the <code>root</code> user. Default <code>ROOT-API-KEY</code>.</li>
 </ul>
 <h3 id="usage">Usage</h3>
@@ -594,13 +594,15 @@ it in List The Docs:</p>
 <p>Adding a project to List The Docs can be done using the following REST API:</p>
 <div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
 
-<span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
     <span class="s1">&#39;http://localhost:5000/api/v1/projects&#39;</span><span class="p">,</span> 
     <span class="n">json</span><span class="o">=</span><span class="p">{</span>
-        <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;project-name&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Project Title&#39;</span><span class="p">,</span>
         <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;The description of the project&#39;</span><span class="p">,</span>
     <span class="p">}</span>
 <span class="p">)</span>
+
+<span class="c1"># The response contains the `name` of the project</span>
 </pre></div>
 
 
@@ -625,9 +627,11 @@ simple Python client:</p>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">listthedocs.client</span> <span class="kn">import</span> <span class="n">ListTheDocs</span><span class="p">,</span> <span class="n">Project</span><span class="p">,</span> <span class="n">Version</span>
 
 <span class="n">client</span> <span class="o">=</span> <span class="n">ListTheDocs</span><span class="p">()</span>
-<span class="n">client</span><span class="o">.</span><span class="n">add_project</span><span class="p">(</span><span class="n">Project</span><span class="p">(</span><span class="s1">&#39;project-name&#39;</span><span class="p">,</span> <span class="s1">&#39;description&#39;</span><span class="p">))</span>
+<span class="n">project</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">add_project</span><span class="p">(</span>
+    <span class="n">Project</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Project Title&#39;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;description&#39;</span><span class="p">)</span>
+<span class="p">)</span>
 <span class="n">client</span><span class="o">.</span><span class="n">add_version</span><span class="p">(</span>
-    <span class="s1">&#39;project-name&#39;</span><span class="p">,</span> 
+    <span class="n">project</span><span class="p">,</span> 
     <span class="n">Version</span><span class="p">(</span><span class="s1">&#39;1.0.0&#39;</span><span class="p">,</span> <span class="s1">&#39;http://www.example.com/doc/1.0.0/index.html&#39;</span><span class="p">)</span>
 <span class="p">)</span>
 </pre></div>

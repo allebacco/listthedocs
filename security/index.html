@@ -437,18 +437,22 @@
                 <h1 id="security">Security</h1>
 <p><em>List The Docs</em> uses a token (<code>Api-Key</code>) to limit the access to the REST APIs
 to only known users.</p>
+<p>To enable the sececurity access, set</p>
+<div class="codehilite"><pre><span></span><span class="n">LOGIN_DISABLED</span> <span class="o">=</span> <span class="bp">True</span>
+</pre></div>
+
+
+<p>in the configuration file.</p>
 <p>The administrator of the service is the <code>root</code> user that is allowed to create
-and remove other users and manage their permissions on all the projects.</p>
+and remove other users and manage their permissions on all the projects.<br>
+Moreover, the <code>root</code> user can manage both projects and versions.</p>
 <h2 id="roles">Roles</h2>
 <p>The usage of the REST APIs form managing the projects is restricted to the users
 by <em>roles</em>. The roles are assigned to users only to specific projects.</p>
 <p>The following roles are available:</p>
 <ul>
-<li><code>UPDATE_PROJECT</code>: The user can update a project</li>
-<li><code>REMOVE_PROJECT</code>: The user can remove the project</li>
-<li><code>ADD_VERSION</code>: The user can ad a new documentation version to the project</li>
-<li><code>UPDATE_VERSION</code>: The user can update a documentaton version on the project</li>
-<li><code>REMOVE_VERSION</code>: The user can remove a documentation version from the project</li>
+<li><code>PROJECT_MANAGER</code>: The user can update/delete the project and add/update/remove versions</li>
+<li><code>VERSION_MANAGER</code>: The user can add/update/remove versions</li>
 </ul>
                 
                   

@@ -584,7 +584,7 @@ To authenticate as <em>root</em> user, you should use the API-Key set in the
 <h2 id="users">Users</h2>
 <h3 id="adding-new-user">Adding new user</h3>
 <p>It is possible to add a new user with the following call:</p>
-<div class="codehilite"><pre><span></span><span class="nf">POST</span> <span class="nn">/api/v1/users</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<div class="codehilite"><pre><span></span><span class="nf">POST</span> <span class="nn">/api/v2/users</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
 <span class="na">Api-Key</span><span class="o">:</span> <span class="l">f9bf78b9a18ce6d46a0cd2b0b86df9da</span>
 
@@ -640,7 +640,7 @@ To authenticate as <em>root</em> user, you should use the API-Key set in the
 <code>api_keys.key</code> field.</p>
 <h3 id="reading-a-user">Reading a user</h3>
 <p>It is possible to read an user using the following call:</p>
-<div class="codehilite"><pre><span></span><span class="nf">GET</span> <span class="nn">/api/v1/users/bar</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<div class="codehilite"><pre><span></span><span class="nf">GET</span> <span class="nn">/api/v2/users/bar</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
 <span class="na">Api-Key</span><span class="o">:</span> <span class="l">f9bf78b9a18ce6d46a0cd2b0b86df9da</span>
 </pre></div>
@@ -668,7 +668,7 @@ To authenticate as <em>root</em> user, you should use the API-Key set in the
 
 <h3 id="reading-all-the-users">Reading all the users</h3>
 <p>It is possible to read all the users using the following call:</p>
-<div class="codehilite"><pre><span></span><span class="nf">GET</span> <span class="nn">/api/v1/users</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<div class="codehilite"><pre><span></span><span class="nf">GET</span> <span class="nn">/api/v2/users</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
 <span class="na">Api-Key</span><span class="o">:</span> <span class="l">f9bf78b9a18ce6d46a0cd2b0b86df9da</span>
 </pre></div>
@@ -710,20 +710,21 @@ To authenticate as <em>root</em> user, you should use the API-Key set in the
 
 
 <h2 id="roles">Roles</h2>
+<p>The roles are used when the <a href="../../security/">security</a> is enabled.</p>
 <h3 id="adding-roles-to-user">Adding roles to user</h3>
 <p>It is possible to add a roles to a user using the following call:</p>
-<div class="codehilite"><pre><span></span><span class="nf">PATCH</span> <span class="nn">/api/v1/users/bar/roles</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<div class="codehilite"><pre><span></span><span class="nf">PATCH</span> <span class="nn">/api/v2/users/bar/roles</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
 <span class="na">Api-Key</span><span class="o">:</span> <span class="l">f9bf78b9a18ce6d46a0cd2b0b86df9da</span>
 
 <span class="p">[</span>
     <span class="p">{</span>
-        <span class="nt">&quot;role_name&quot;</span><span class="p">:</span> <span class="s2">&quot;ADD_VERSION&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;project_name&quot;</span><span class="p">:</span> <span class="s2">&quot;project1&quot;</span>
+        <span class="nt">&quot;role_name&quot;</span><span class="p">:</span> <span class="s2">&quot;PROJECT_MANAGER&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;project_code&quot;</span><span class="p">:</span> <span class="s2">&quot;project1&quot;</span>
     <span class="p">},</span>
     <span class="p">{</span>
-        <span class="nt">&quot;role_name&quot;</span><span class="p">:</span> <span class="s2">&quot;UPDATE_PROJECT&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;project_name&quot;</span><span class="p">:</span> <span class="s2">&quot;project2&quot;</span>
+        <span class="nt">&quot;role_name&quot;</span><span class="p">:</span> <span class="s2">&quot;VERSION_MANAGER&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;project_code&quot;</span><span class="p">:</span> <span class="s2">&quot;project2&quot;</span>
     <span class="p">}</span>
 <span class="p">]</span>
 </pre></div>
@@ -741,18 +742,18 @@ To authenticate as <em>root</em> user, you should use the API-Key set in the
 
 <h3 id="removing-roles-from-user">Removing roles from user</h3>
 <p>It is possible to remove a roles from a user using the following call:</p>
-<div class="codehilite"><pre><span></span><span class="nf">DELETE</span> <span class="nn">/api/v1/users/bar/roles</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<div class="codehilite"><pre><span></span><span class="nf">DELETE</span> <span class="nn">/api/v2/users/bar/roles</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
 <span class="na">Api-Key</span><span class="o">:</span> <span class="l">f9bf78b9a18ce6d46a0cd2b0b86df9da</span>
 
 <span class="p">[</span>
     <span class="p">{</span>
-        <span class="nt">&quot;role_name&quot;</span><span class="p">:</span> <span class="s2">&quot;ADD_VERSION&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;project_name&quot;</span><span class="p">:</span> <span class="s2">&quot;project1&quot;</span>
+        <span class="nt">&quot;role_name&quot;</span><span class="p">:</span> <span class="s2">&quot;PROJECT_MANAGER&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;project_code&quot;</span><span class="p">:</span> <span class="s2">&quot;project1&quot;</span>
     <span class="p">},</span>
     <span class="p">{</span>
-        <span class="nt">&quot;role_name&quot;</span><span class="p">:</span> <span class="s2">&quot;UPDATE_PROJECT&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;project_name&quot;</span><span class="p">:</span> <span class="s2">&quot;project2&quot;</span>
+        <span class="nt">&quot;role_name&quot;</span><span class="p">:</span> <span class="s2">&quot;VERSION_MANAGER&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;project_code&quot;</span><span class="p">:</span> <span class="s2">&quot;project2&quot;</span>
     <span class="p">}</span>
 <span class="p">]</span>
 </pre></div>
@@ -770,7 +771,7 @@ To authenticate as <em>root</em> user, you should use the API-Key set in the
 
 <h3 id="reading-user-roles">Reading user roles</h3>
 <p>It is possible to read the roles of an user using the following call:</p>
-<div class="codehilite"><pre><span></span><span class="nf">GET</span> <span class="nn">/api/v1/users/bar/roles</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<div class="codehilite"><pre><span></span><span class="nf">GET</span> <span class="nn">/api/v2/users/bar/roles</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
 <span class="na">Api-Key</span><span class="o">:</span> <span class="l">f9bf78b9a18ce6d46a0cd2b0b86df9da</span>
 </pre></div>
@@ -782,12 +783,12 @@ To authenticate as <em>root</em> user, you should use the API-Key set in the
 
 <span class="p">[</span>
     <span class="p">{</span>
-        <span class="nt">&quot;role_name&quot;</span><span class="p">:</span> <span class="s2">&quot;ADD_VERSION&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;project_name&quot;</span><span class="p">:</span> <span class="s2">&quot;project1&quot;</span>
+        <span class="nt">&quot;role_name&quot;</span><span class="p">:</span> <span class="s2">&quot;PROJECT_MANAGER&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;project_code&quot;</span><span class="p">:</span> <span class="s2">&quot;project1&quot;</span>
     <span class="p">},</span>
     <span class="p">{</span>
-        <span class="nt">&quot;role_name&quot;</span><span class="p">:</span> <span class="s2">&quot;UPDATE_PROJECT&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;project_name&quot;</span><span class="p">:</span> <span class="s2">&quot;project2&quot;</span>
+        <span class="nt">&quot;role_name&quot;</span><span class="p">:</span> <span class="s2">&quot;VERSION_MANAGER&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;project_code&quot;</span><span class="p">:</span> <span class="s2">&quot;project2&quot;</span>
     <span class="p">}</span>
 <span class="p">]</span>
 </pre></div>

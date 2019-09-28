@@ -377,6 +377,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#documentation-links" title="Documentation links" class="md-nav__link">
+    Documentation links
+  </a>
+  
+</li>
+      
       
       
       
@@ -567,6 +574,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#documentation-links" title="Documentation links" class="md-nav__link">
+    Documentation links
+  </a>
+  
+</li>
+      
       
       
       
@@ -593,12 +607,12 @@ require an API-Key to validate the user that make the request.</p>
 <h2 id="project">Project</h2>
 <h3 id="adding-a-project">Adding a Project</h3>
 <p>The following call will add a project:</p>
-<div class="codehilite"><pre><span></span><span class="nf">POST</span> <span class="nn">/api/v1/projects</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<div class="codehilite"><pre><span></span><span class="nf">POST</span> <span class="nn">/api/v2/projects</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
 <span class="na">Api-Key</span><span class="o">:</span> <span class="l">f9bf78b9a18ce6d46a0cd2b0b86df9da</span>
 
 <span class="p">{</span>
-    <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Project-Name&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Project Title&quot;</span><span class="p">,</span>
     <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;A not too long description of the project&quot;</span><span class="p">,</span>
     <span class="nt">&quot;logo&quot;</span><span class="p">:</span> <span class="s2">&quot;http://www.projectname.com/logo.png&quot;</span>
 <span class="p">}</span>
@@ -615,9 +629,14 @@ require an API-Key to validate the user that make the request.</p>
 </thead>
 <tbody>
 <tr>
-<td align="center">name</td>
+<td align="center">title</td>
 <td align="center"><em>str</em></td>
-<td align="center">The name of the project</td>
+<td align="center">The title of the project</td>
+</tr>
+<tr>
+<td align="center">code</td>
+<td align="center"><em>str</em></td>
+<td align="center">The unique code of the project</td>
 </tr>
 <tr>
 <td align="center">description</td>
@@ -637,7 +656,8 @@ require an API-Key to validate the user that make the request.</p>
 <span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
 
 <span class="p">{</span>
-    <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Project-Name&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Project Title&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;code&quot;</span><span class="p">:</span> <span class="s2">&quot;project-title&quot;</span><span class="p">,</span>
     <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;A not too long description of the project&quot;</span><span class="p">,</span>
     <span class="nt">&quot;logo&quot;</span><span class="p">:</span> <span class="s2">&quot;http://www.projectname.com/logo.png&quot;</span><span class="p">,</span>
     <span class="nt">&quot;versions&quot;</span><span class="p">:</span> <span class="p">[]</span>
@@ -646,8 +666,8 @@ require an API-Key to validate the user that make the request.</p>
 
 
 <h3 id="reading-a-project">Reading a Project</h3>
-<p>The following call will read a project named <em>Project-Name</em>:</p>
-<div class="codehilite"><pre><span></span><span class="nf">GET</span> <span class="nn">/api/v1/projects/Project-Name</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<p>The following call will read a project with code <em>project-title</em>:</p>
+<div class="codehilite"><pre><span></span><span class="nf">GET</span> <span class="nn">/api/v2/projects/project-title</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 </pre></div>
 
 
@@ -656,7 +676,8 @@ require an API-Key to validate the user that make the request.</p>
 <span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
 
 <span class="p">{</span>
-    <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Project-Name&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Project Title&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;code&quot;</span><span class="p">:</span> <span class="s2">&quot;project-title&quot;</span><span class="p">,</span>
     <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;A not too long description of the project&quot;</span><span class="p">,</span>
     <span class="nt">&quot;logo&quot;</span><span class="p">:</span> <span class="s2">&quot;http://www.projectname.com/logo.png&quot;</span><span class="p">,</span>
     <span class="nt">&quot;versions&quot;</span><span class="p">:</span> <span class="p">[]</span>
@@ -667,7 +688,7 @@ require an API-Key to validate the user that make the request.</p>
 <p>If the project does not exists, a 404 response code will be returned.</p>
 <h3 id="reading-all-the-projects">Reading all the Projects</h3>
 <p>The following call will read all the projects:</p>
-<div class="codehilite"><pre><span></span><span class="nf">GET</span> <span class="nn">/api/v1/projects</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<div class="codehilite"><pre><span></span><span class="nf">GET</span> <span class="nn">/api/v2/projects</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 </pre></div>
 
 
@@ -677,13 +698,15 @@ require an API-Key to validate the user that make the request.</p>
 
 <span class="p">[</span>
     <span class="p">{</span>
-        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Project-Name-1&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Project Title 1&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;code&quot;</span><span class="p">:</span> <span class="s2">&quot;project-title-1&quot;</span><span class="p">,</span>
         <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;A not too long description of the project 1&quot;</span><span class="p">,</span>
         <span class="nt">&quot;logo&quot;</span><span class="p">:</span> <span class="s2">&quot;http://www.projectname1.com/logo.png&quot;</span><span class="p">,</span>
         <span class="nt">&quot;versions&quot;</span><span class="p">:</span> <span class="p">[]</span>
     <span class="p">},</span>
     <span class="p">{</span>
-        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Project-Name-2&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Project Title 2&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;code&quot;</span><span class="p">:</span> <span class="s2">&quot;project-title-2&quot;</span><span class="p">,</span>
         <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;A not too long description of the project 2&quot;</span><span class="p">,</span>
         <span class="nt">&quot;logo&quot;</span><span class="p">:</span> <span class="s2">&quot;http://www.projectname2.com/logo.png&quot;</span><span class="p">,</span>
         <span class="nt">&quot;versions&quot;</span><span class="p">:</span> <span class="p">[]</span>
@@ -695,7 +718,7 @@ require an API-Key to validate the user that make the request.</p>
 <h3 id="updating-a-project">Updating a Project</h3>
 <p>It is possible to update the <em>description</em> or the <em>logo</em> of a Project using the following
 call:</p>
-<div class="codehilite"><pre><span></span><span class="nf">PATCH</span> <span class="nn">/api/v1/projects/Project-Name</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<div class="codehilite"><pre><span></span><span class="nf">PATCH</span> <span class="nn">/api/v2/projects/project-title</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
 <span class="na">Api-Key</span><span class="o">:</span> <span class="l">f9bf78b9a18ce6d46a0cd2b0b86df9da</span>
 
@@ -712,7 +735,8 @@ call:</p>
 <span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
 
 <span class="p">{</span>
-    <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Project-Name&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Project Title&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;code&quot;</span><span class="p">:</span> <span class="s2">&quot;project-title&quot;</span><span class="p">,</span>
     <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;An optional new description&quot;</span><span class="p">,</span>
     <span class="nt">&quot;logo&quot;</span><span class="p">:</span> <span class="s2">&quot;http://www.projectname.com/an-optional-new-logo.png&quot;</span><span class="p">,</span>
     <span class="nt">&quot;versions&quot;</span><span class="p">:</span> <span class="p">[]</span>
@@ -722,7 +746,7 @@ call:</p>
 
 <h3 id="removing-a-project">Removing a Project</h3>
 <p>It is possible to remove a Project (and all its versions) using the following call:</p>
-<div class="codehilite"><pre><span></span><span class="nf">DELETE</span> <span class="nn">/api/v1/projects/Project-Name</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<div class="codehilite"><pre><span></span><span class="nf">DELETE</span> <span class="nn">/api/v2/projects/project-title</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Api-Key</span><span class="o">:</span> <span class="l">f9bf78b9a18ce6d46a0cd2b0b86df9da</span>
 </pre></div>
 
@@ -736,7 +760,7 @@ call:</p>
 <h3 id="adding-a-new-documentation-version-to-a-project">Adding a new documentation Version to a Project</h3>
 <p>The following call will add a new documentation version to the <em>Project-Name</em>
 project:</p>
-<div class="codehilite"><pre><span></span><span class="nf">POST</span> <span class="nn">/api/v1/projects/Project-Name/versions</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<div class="codehilite"><pre><span></span><span class="nf">POST</span> <span class="nn">/api/v2/projects/project-title/versions</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
 <span class="na">Api-Key</span><span class="o">:</span> <span class="l">f9bf78b9a18ce6d46a0cd2b0b86df9da</span>
 
@@ -759,7 +783,7 @@ project:</p>
 <tr>
 <td align="center">name</td>
 <td align="center"><em>str</em></td>
-<td align="center">The name of the docuemtation version (e.g. <em>1.0.0</em>).</td>
+<td align="center">The name of the documentation version (e.g. <em>1.0.0</em>).</td>
 </tr>
 <tr>
 <td align="center">url</td>
@@ -773,7 +797,8 @@ project:</p>
 <span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
 
 <span class="p">{</span>
-    <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Project-Name&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Project Title&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;code&quot;</span><span class="p">:</span> <span class="s2">&quot;project-title&quot;</span><span class="p">,</span>
     <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;A not too long description of the project&quot;</span><span class="p">,</span>
     <span class="nt">&quot;logo&quot;</span><span class="p">:</span> <span class="s2">&quot;http://www.projectname.com/logo.png&quot;</span><span class="p">,</span>
     <span class="nt">&quot;versions&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -792,7 +817,7 @@ project:</p>
 it (e.g. in case documentation has been moved to a different URL).</p>
 <p>The <em>name</em> field can't be changed.</p>
 <p>The following call will update the documentation URL:</p>
-<div class="codehilite"><pre><span></span><span class="nf">PATCH</span> <span class="nn">/api/v1/projects/Project-Name/versions/1.0.0</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<div class="codehilite"><pre><span></span><span class="nf">PATCH</span> <span class="nn">/api/v2/projects/project-title/versions/1.0.0</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
 <span class="na">Api-Key</span><span class="o">:</span> <span class="l">f9bf78b9a18ce6d46a0cd2b0b86df9da</span>
 
@@ -807,7 +832,8 @@ it (e.g. in case documentation has been moved to a different URL).</p>
 <span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
 
 <span class="p">{</span>
-    <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Project-Name&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Project Title&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;code&quot;</span><span class="p">:</span> <span class="s2">&quot;project-title&quot;</span><span class="p">,</span>
     <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;A not too long description of the project&quot;</span><span class="p">,</span>
     <span class="nt">&quot;logo&quot;</span><span class="p">:</span> <span class="s2">&quot;http://www.projectname.com/logo.png&quot;</span><span class="p">,</span>
     <span class="nt">&quot;versions&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -822,7 +848,7 @@ it (e.g. in case documentation has been moved to a different URL).</p>
 
 <h3 id="removing-a-version-from-a-project">Removing a Version from a Project</h3>
 <p>It is possible to remove a Version from a Project using the following call:</p>
-<div class="codehilite"><pre><span></span><span class="nf">DELETE</span> <span class="nn">/api/v1/projects/Project-Name/versions/1.0.0</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<div class="codehilite"><pre><span></span><span class="nf">DELETE</span> <span class="nn">/api/v2/projects/project-title/versions/1.0.0</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Api-Key</span><span class="o">:</span> <span class="l">f9bf78b9a18ce6d46a0cd2b0b86df9da</span>
 </pre></div>
 
@@ -832,12 +858,22 @@ it (e.g. in case documentation has been moved to a different URL).</p>
 <span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
 
 <span class="p">{</span>
-    <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Project-Name&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Project Title&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;code&quot;</span><span class="p">:</span> <span class="s2">&quot;project-title&quot;</span><span class="p">,</span>
     <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;A not too long description of the project&quot;</span><span class="p">,</span>
     <span class="nt">&quot;logo&quot;</span><span class="p">:</span> <span class="s2">&quot;http://www.projectname.com/logo.png&quot;</span><span class="p">,</span>
     <span class="nt">&quot;versions&quot;</span><span class="p">:</span> <span class="p">[]</span>
 <span class="p">}</span>
 </pre></div>
+
+
+<h2 id="documentation-links">Documentation links</h2>
+<p>The links to the documentation version of each project is available
+at the following URLs:</p>
+<ul>
+<li><code>/&lt;project_code&gt;/&lt;version_name&gt;/</code>: link to a documentation version of a project</li>
+<li><code>/&lt;project_code&gt;/latest/</code>: link to the latest documentation version of a project</li>
+</ul>
                 
                   
                 

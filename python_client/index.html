@@ -638,6 +638,11 @@ Python client. The following line will load it and its entities.</p>
 <td align="center">The name of the project</td>
 </tr>
 <tr>
+<td align="center">title</td>
+<td align="center"><em>str</em></td>
+<td align="center">The title of the project</td>
+</tr>
+<tr>
 <td align="center">description</td>
 <td align="center"><em>str</em></td>
 <td align="center">The description of the project. Custom HTML is allowed.</td>
@@ -699,7 +704,9 @@ for managing users and roles. </p>
 <span class="n">client</span> <span class="o">=</span> <span class="n">ListTheDocs</span><span class="p">()</span>
 
 <span class="c1"># Add a project</span>
-<span class="n">project</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">add_project</span><span class="p">(</span><span class="n">Project</span><span class="p">(</span><span class="s1">&#39;Project-Name&#39;</span><span class="p">,</span> <span class="s1">&#39;A long description&#39;</span><span class="p">))</span>
+<span class="n">project</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">add_project</span><span class="p">(</span>
+    <span class="n">Project</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Project-Name&#39;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;A long description&#39;</span><span class="p">)</span>
+<span class="p">)</span>
 
 <span class="k">print</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
 </pre></div>
@@ -713,7 +720,7 @@ for managing users and roles. </p>
 <span class="n">client</span> <span class="o">=</span> <span class="n">ListTheDocs</span><span class="p">()</span>
 
 <span class="c1"># Read a project</span>
-<span class="n">project</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_project</span><span class="p">(</span><span class="s1">&#39;Project-Name&#39;</span><span class="p">)</span>
+<span class="n">project</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_project</span><span class="p">(</span><span class="s1">&#39;project-name&#39;</span><span class="p">)</span>
 
 <span class="k">print</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
 </pre></div>
@@ -745,7 +752,7 @@ code:</p>
 
 <span class="c1"># update both logo and description</span>
 <span class="n">project</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">update_project</span><span class="p">(</span>
-    <span class="s1">&#39;Project-Name&#39;</span><span class="p">,</span> 
+    <span class="n">project</span><span class="p">,</span> 
     <span class="n">description</span><span class="o">=</span><span class="s1">&#39;new description&#39;</span><span class="p">,</span>
     <span class="n">logo</span><span class="o">=</span><span class="s1">&#39;http://www.example.com/log.png&#39;</span>
 <span class="p">)</span>
@@ -764,7 +771,7 @@ code:</p>
 <span class="n">project</span> <span class="o">=</span> <span class="c1"># ... Create Project-Name project</span>
 
 <span class="c1"># Remove the project</span>
-<span class="n">project</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">delete_project</span><span class="p">(</span><span class="s1">&#39;Project-Name&#39;</span><span class="p">)</span>
+<span class="n">project</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">delete_project</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
 </pre></div>
 
 
@@ -780,7 +787,7 @@ project:</p>
 
 <span class="c1"># Add a project version</span>
 <span class="n">project</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">add_version</span><span class="p">(</span>
-    <span class="s1">&#39;Project-Name&#39;</span><span class="p">,</span> 
+    <span class="n">project</span><span class="p">,</span> 
     <span class="n">Version</span><span class="p">(</span><span class="s1">&#39;1.0.0&#39;</span><span class="p">,</span> <span class="s1">&#39;http://www.example.com/doc/1.0.0/index.html&#39;</span><span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
@@ -802,7 +809,7 @@ it (e.g. in case documentation has been moved to a different URL).</p>
 
 <span class="c1"># Update the project version URL</span>
 <span class="n">project</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">update_version</span><span class="p">(</span>
-    <span class="s1">&#39;Project-Name&#39;</span><span class="p">,</span> <span class="s1">&#39;1.0.0&#39;</span><span class="p">,</span> 
+    <span class="n">project</span><span class="p">,</span> <span class="s1">&#39;1.0.0&#39;</span><span class="p">,</span> 
     <span class="n">url</span><span class="o">=</span><span class="s1">&#39;http://www.example.com/new_doc/1.0.0/index.html&#39;</span>
 <span class="p">)</span>
 </pre></div>
@@ -819,7 +826,7 @@ it (e.g. in case documentation has been moved to a different URL).</p>
 <span class="n">project</span> <span class="o">=</span> <span class="c1"># ... Add a project version 1.0.0</span>
 
 <span class="c1"># Delete project version</span>
-<span class="n">project</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">delete_version</span><span class="p">(</span><span class="s1">&#39;Project-Name&#39;</span><span class="p">,</span> <span class="s1">&#39;1.0.0&#39;</span><span class="p">)</span>
+<span class="n">project</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">delete_version</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="s1">&#39;1.0.0&#39;</span><span class="p">)</span>
 </pre></div>
                 
                   
