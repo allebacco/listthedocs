@@ -1,19 +1,25 @@
 # Getting Started
 
-Since List The Docs is writte using Flask it can be execute with the follwing
+Since List The Docs has been developed using Flask it can be execute with the follwing
 commands:
 
-    export FLASK_APP=listthedocs
-    flask run
-    * Running on http://127.0.0.1:5000/
+``` bash
+export FLASK_APP=listthedocs
+flask run
+* Running on http://127.0.0.1:5000/
+```
 
 For Windows commandline use:
 
-    set FLASK_APP=listthedocs
+``` bat
+set FLASK_APP=listthedocs
+```
 
 And for Windows Powershell use:
 
-    $env:FLASK_APP="listthedocs"
+``` powershell
+$env:FLASK_APP="listthedocs"
+```
 
 ### Configuration
 
@@ -31,7 +37,7 @@ The configuration is loaded from the `config.py` in the *instance_path*:
 - **TITLE**: The title of the web pages.
 - **HEADER**: The header of the web page. HTML is allowed.
 - **READONLY**: Set to true to disable the write REST APIs.
-- **LOGIN_DISABLED**: Disable the login and security.
+- **LOGIN_DISABLED**: Disable the login and security. Default ``True``
 - **ROOT_API_KEY**: The Api-Key for the `root` user. Default `ROOT-API-KEY`.
 
 ### Usage
@@ -56,31 +62,36 @@ it in List The Docs:
 
 Adding a project to List The Docs can be done using the following REST API:
 
-    import requests
+``` python
+import requests
 
-    requests.post(
-        'http://localhost:5000/api/v1/projects', 
-        json={
-            'name': 'project-name',
-            'description': 'The description of the project',
-        }
-    )
+response = requests.post(
+    'http://localhost:5000/api/v1/projects', 
+    json={
+        'title': 'Project Title',
+        'description': 'The description of the project',
+    }
+)
 
+# The response contains the `name` of the project
+```
 
 ##### Add a documentation version link to List The Docs
 
 Adding a version for a project documentation to List The Docs can be done 
 using the following REST API:
 
-    import requests
+``` python
+import requests
 
-    requests.post(
-        'http://localhost:5000/api/v1/projects/<project-name>/versions', 
-        json={
-            'name': '1.0.0',
-            'url': 'http://www.example.com/doc/1.0.0/index.html',
-        }
-    )
+requests.post(
+    'http://localhost:5000/api/v1/projects/<project-name>/versions', 
+    json={
+        'name': '1.0.0',
+        'url': 'http://www.example.com/doc/1.0.0/index.html',
+    }
+)
+```
 
 
 ### Python Client
@@ -88,11 +99,15 @@ using the following REST API:
 To simplify the management of the projects, List The Docs provides a 
 simple Python client:
 
-    from listthedocs.client import ListTheDocs, Project, Version
+``` python
+from listthedocs.client import ListTheDocs, Project, Version
 
-    client = ListTheDocs()
-    client.add_project(Project('project-name', 'description'))
-    client.add_version(
-        'project-name', 
-        Version('1.0.0', 'http://www.example.com/doc/1.0.0/index.html')
-    )
+client = ListTheDocs()
+project = client.add_project(
+    Project(title='Project Title', description='description')
+)
+client.add_version(
+    project, 
+    Version('1.0.0', 'http://www.example.com/doc/1.0.0/index.html')
+)
+```

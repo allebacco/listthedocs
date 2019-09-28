@@ -104,6 +104,11 @@ class User:
         return attr.asdict(self)
 
 
+def _get_project_name(project: Union[Project, str]) -> str:
+    if isinstance(project, Project):
+        return project.name
+    return project
+
 
 class ListTheDocs:
     """ListTheDocs client"""
@@ -146,7 +151,11 @@ class ListTheDocs:
 
         return Project(**response.json())
 
-    def update_project(self, name: str, *, title: str = None, description: str = None, logo: str = None) -> Project:
+    def update_project(self,
+                       project: Union[Project, str], *,
+                       title: str = None, description: str = None, logo: str = None) -> Project:
+        name = _get_project_name(project)
+
         endpoint_url = self._base_url + '/api/v2/projects/{}'.format(name)
 
         json = dict()
@@ -163,13 +172,15 @@ class ListTheDocs:
 
         return Project(**response.json())
 
-    def delete_project(self, name: str):
+    def delete_project(self, project: Union[Project, str]):
+        name = _get_project_name(project)
         endpoint_url = self._base_url + '/api/v2/projects/{}'.format(name)
         response = self._session.delete(endpoint_url)
         if response.status_code != 200:
             raise RuntimeError('Error during removing project')
 
-    def add_version(self, project_name: str, version: Version) -> Project:
+    def add_version(self, project: Union[Project, str], version: Version) -> Project:
+        project_name = _get_project_name(project)
         endpoint_url = self._base_url + '/api/v2/projects/{}/versions'.format(project_name)
         response = self._session.post(endpoint_url, json=version.to_json())
         if response.status_code != 201:
@@ -177,7 +188,8 @@ class ListTheDocs:
 
         return Project(**response.json())
 
-    def delete_version(self, project_name: str, version_name: str) -> Project:
+    def delete_version(self, project: Union[Project, str], version_name: str) -> Project:
+        project_name = _get_project_name(project)
         endpoint_url = self._base_url + '/api/v2/projects/{}/versions/{}'.format(project_name, version_name)
         response = self._session.delete(endpoint_url)
         if response.status_code != 200:
@@ -185,7 +197,8 @@ class ListTheDocs:
 
         return Project(**response.json())
 
-    def update_version(self, project_name: str, version_name: str, *, url: str) -> Project:
+    def update_version(self, project: Union[Project, str], version_name: str, *, url: str) -> Project:
+        project_name = _get_project_name(project)
         endpoint_url = self._base_url + '/api/v2/projects/{}/versions/{}'.format(project_name, version_name)
 
         json = dict()
