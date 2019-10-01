@@ -3,7 +3,7 @@
 *List The Docs* uses a token (`Api-Key`) to limit the access to the REST APIs
 to only known users.
 
-To enable the sececurity access, set
+To enable the security access, set
 
 ``` python
 LOGIN_DISABLED = True
