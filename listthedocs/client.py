@@ -129,7 +129,11 @@ class ListTheDocs:
         endpoint_url = self._base_url + '/api/v2/projects'
         response = self._session.post(endpoint_url, json=project.to_json())
         if response.status_code != 201:
-            raise RuntimeError('Error during adding project ' + project.name)
+            name = project.code or str(project)
+            raise RuntimeError(
+                    'Error while adding project ' + name + ":\n" +
+                    response.text
+                )
 
         return Project(**response.json())
 
@@ -137,7 +141,7 @@ class ListTheDocs:
         endpoint_url = self._base_url + '/api/v2/projects'
         response = self._session.get(endpoint_url)
         if response.status_code != 200:
-            raise RuntimeError('Error during getting projects')
+            raise RuntimeError('Error while getting projects')
 
         return tuple(Project(**p) for p in response.json())
 
@@ -147,7 +151,7 @@ class ListTheDocs:
         if response.status_code == 404:
             return None
         if response.status_code != 200:
-            raise RuntimeError('Error during getting project ' + name)
+            raise RuntimeError('Error while getting project ' + name)
 
         return Project(**response.json())
 
@@ -168,7 +172,7 @@ class ListTheDocs:
 
         response = self._session.patch(endpoint_url, json=json)
         if response.status_code != 200:
-            raise RuntimeError('Error during updating project')
+            raise RuntimeError('Error while updating project')
 
         return Project(**response.json())
 
@@ -177,14 +181,18 @@ class ListTheDocs:
         endpoint_url = self._base_url + '/api/v2/projects/{}'.format(name)
         response = self._session.delete(endpoint_url)
         if response.status_code != 200:
-            raise RuntimeError('Error during removing project')
+            raise RuntimeError('Error while removing project')
 
     def add_version(self, project: Union[Project, str], version: Version) -> Project:
         project_code = _get_project_code(project)
         endpoint_url = self._base_url + '/api/v2/projects/{}/versions'.format(project_code)
         response = self._session.post(endpoint_url, json=version.to_json())
+        version_name = version.name
         if response.status_code != 201:
-            raise RuntimeError('Error during creating project version')
+            raise RuntimeError('Error while creating project version' +
+                    (project_code  or str(project)) + "-" + version_name + ":\n" +
+                    response.text
+                )
 
         return Project(**response.json())
 
@@ -193,7 +201,7 @@ class ListTheDocs:
         endpoint_url = self._base_url + '/api/v2/projects/{}/versions/{}'.format(project_code, version_name)
         response = self._session.delete(endpoint_url)
         if response.status_code != 200:
-            raise RuntimeError('Error during deleting version ' + version_name)
+            raise RuntimeError('Error while deleting version ' + version_name)
 
         return Project(**response.json())
 
@@ -207,7 +215,7 @@ class ListTheDocs:
 
         response = self._session.patch(endpoint_url, json=json)
         if response.status_code != 200:
-            raise RuntimeError('Error during updating ' + version_name)
+            raise RuntimeError('Error while updating ' + version_name)
 
         return Project(**response.json())
 
@@ -230,7 +238,7 @@ class ListTheDocs:
         endpoint_url = self._base_url + '/api/v2/users'
         response = self._session.post(endpoint_url, json={'name': name, 'is_admin': is_admin})
         if response.status_code != 201:
-            raise RuntimeError('Error during adding user ' + name)
+            raise RuntimeError('Error while adding user ' + name)
 
         return User(**response.json())
 
@@ -240,7 +248,7 @@ class ListTheDocs:
         if response.status_code == 404:
             return None
         if response.status_code != 200:
-            raise RuntimeError('Error during getting user ' + name)
+            raise RuntimeError('Error while getting user ' + name)
 
         return User(**response.json())
 
@@ -248,7 +256,7 @@ class ListTheDocs:
         endpoint_url = self._base_url + '/api/v2/users'
         response = self._session.get(endpoint_url)
         if response.status_code != 200:
-            raise RuntimeError('Error during getting users ')
+            raise RuntimeError('Error while getting users ')
 
         return [User(**u) for u in response.json()]
 
@@ -268,7 +276,7 @@ class ListTheDocs:
 
         response = self._session.get(endpoint_url)
         if response.status_code != 200:
-            raise RuntimeError('Error during get roles of user ' + user)
+            raise RuntimeError('Error while get roles of user ' + user)
 
         return [Role(**r) for r in response.json()]
 
