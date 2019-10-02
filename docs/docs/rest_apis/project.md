@@ -1,9 +1,10 @@
 # Project Management
 
-List The Docs provides a set of REST APIs to manage the projects and the documentation versions.
+List The Docs provides a set of REST APIs to manage the projects and
+documentation versions.
 
-The GET requests are not behind access control, while POST, PATCH and DELETE requests
-require an API-Key to validate the user that make the request.
+The GET requests are not behind access control, while POST, PATCH and DELETE
+requests need an API-Key to validate the caller's identity.
 
 ## Project
 
@@ -23,14 +24,12 @@ Api-Key: f9bf78b9a18ce6d46a0cd2b0b86df9da
 }
 ```
 
-| Field       | Type  | Description |
-|:-----------:|:-----:|:-----------:|
-| title       | *str* | The title of the project |
-| code        | *str* | The unique code of the project |
+|    Field    | Type  |                       Description                       |
+|:-----------:|:-----:|:-------------------------------------------------------:|
+|    title    | *str* |                The title of the project                 |
+|    code     | *str* |             The unique code of the project              |
 | description | *str* | The description of the project. Custom HTML is allowed. |
-| logo        | *str* | The Logo of the project (optional). |
-
-The *logo* field is optional.
+|    logo     | *str* |           The Logo of the project (optional).           |
 
 The response has the following format:
 
@@ -70,7 +69,7 @@ Content-Type: application/json
 }
 ```
 
-If the project does not exists, a 404 response code will be returned.
+If the project does not exist, a 404 response code will be returned.
 
 ### Reading all the Projects
 
@@ -80,7 +79,7 @@ The following call will read all the projects:
 GET /api/v2/projects HTTP/1.1
 ```
 
-The following response will returns:
+The following response will return:
 
 ``` http
 HTTP/1.1 200 Ok
@@ -106,8 +105,8 @@ Content-Type: application/json
 
 ### Updating a Project
 
-It is possible to update the *description* or the *logo* of a Project using the following
-call:
+It is possible to update the *description* or the *logo* of a Project
+with the following call:
 
 ``` http
 PATCH /api/v2/projects/project-title HTTP/1.1
@@ -120,7 +119,7 @@ Api-Key: f9bf78b9a18ce6d46a0cd2b0b86df9da
 }
 ```
 
-It is possible to update only the *logo* or only the *description*.
+It is possible to update either the *logo* or the *description* only.
 
 The response has the following format:
 
@@ -139,7 +138,8 @@ Content-Type: application/json
 
 ### Removing a Project
 
-It is possible to remove a Project (and all its versions) using the following call:
+It is possible to remove a Project (and all of its versions) through
+the following call:
 
 ``` http
 DELETE /api/v2/projects/project-title HTTP/1.1
@@ -238,7 +238,7 @@ Content-Type: application/json
 
 ### Removing a Version from a Project
 
-It is possible to remove a Version from a Project using the following call:
+It is possible to remove a Version from a Project with the following call:
 
 ``` http
 DELETE /api/v2/projects/project-title/versions/1.0.0 HTTP/1.1
@@ -262,8 +262,8 @@ Content-Type: application/json
 
 ## Documentation links
 
-The links to the documentation version of each project is available
+Links redirecting to the documentation version of each project are available
 at the following URLs:
 
-* `/<project_code>/<version_name>/`: link to a documentation version of a project
-* `/<project_code>/latest/`: link to the latest documentation version of a project
+* `/<project_code>/<version_name>/`: link to a specific version of a project
+* `/<project_code>/latest/`: link to the latest version of a project

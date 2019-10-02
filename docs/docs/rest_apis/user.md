@@ -1,15 +1,15 @@
 # Project Management
 
-List The Docs provides a set of REST APIs to manage the users and API access rights
-to avoid malicious modifications.
+List The Docs provides a set of REST APIs to manage the users and API access
+rights to avoid malicious modifications.
 
-The users REST APIs can be accdessed only from administrators, the users for which
-`is_admin` is `true`.
+Only administrators (the users for which `is_admin` is `true`) can call
+these REST APIs.
 
 ## Root user
 
 At first start, the service creates an administrator users named *root*.
-To authenticate as *root* user, you should use the API-Key set in the 
+To authenticate as *root* user, you should use the API-Key set in the
 `ROOT_API_KEY` configuration variable.
 
 ## Users
@@ -29,12 +29,12 @@ Api-Key: f9bf78b9a18ce6d46a0cd2b0b86df9da
 }
 ```
 
-| Field       | Type  | Description |
-|:-----------:|:-----:|:-----------:|
-| name        | *str* | The name of the user |
-| is_admin    | *bool* | `true` if the user is an administrator (optional, default `false`) |
+|  Field   |  Type  |                            Description                             |
+|:--------:|:------:|:------------------------------------------------------------------:|
+|   name   | *str*  |                        The name of the user                        |
+| is_admin | *bool* | `true` if the user is an administrator (optional, default `false`) |
 
-The response contains the created user with its API-Key for authentication.
+The response contains the created user with its API-Key for authentication:
 
 ```http
 HTTP/1.1 201 Created
@@ -58,10 +58,9 @@ Content-Type: application/json
 The API-Key that the new user should use for authentication is in the
 `api_keys.key` field.
 
+### Reading user details
 
-### Reading a user
-
-It is possible to read an user using the following call:
+It is possible to read user details through the following call:
 
 ```http
 GET /api/v2/users/bar HTTP/1.1
@@ -70,7 +69,6 @@ Api-Key: f9bf78b9a18ce6d46a0cd2b0b86df9da
 ```
 
 The response contains a list with all the users.
-
 
 ```http
 HTTP/1.1 200 Ok
@@ -93,7 +91,7 @@ Content-Type: application/json
 
 ### Reading all the users
 
-It is possible to read all the users using the following call:
+It is possible to read all the users through the following call:
 
 ```http
 GET /api/v2/users HTTP/1.1
@@ -101,7 +99,7 @@ Content-Type: application/json
 Api-Key: f9bf78b9a18ce6d46a0cd2b0b86df9da
 ```
 
-The response contains the requested user.
+The response contains all registered users information.
 
 ```http
 HTTP/1.1 200 Ok
@@ -139,7 +137,7 @@ Content-Type: application/json
 
 ## Roles
 
-The roles are used when the [security](../security.md) is enabled.
+Roles are used when [security](../security.md) is enabled.
 
 ### Adding roles to user
 
@@ -162,7 +160,8 @@ Api-Key: f9bf78b9a18ce6d46a0cd2b0b86df9da
 ]
 ```
 
-The response confirms the roles have been added to the user for the selected projects.
+The response confirms roles have been granted to the user
+for the selected projects.
 
 ```http
 HTTP/1.1 200 Ok
@@ -175,7 +174,7 @@ Content-Type: application/json
 
 ### Removing roles from user
 
-It is possible to remove a roles from a user using the following call:
+It is possible to revoke roles from a user with the following call:
 
 ```http
 DELETE /api/v2/users/bar/roles HTTP/1.1
@@ -194,7 +193,8 @@ Api-Key: f9bf78b9a18ce6d46a0cd2b0b86df9da
 ]
 ```
 
-The response confirms the roles have been removed from the user for the selected projects.
+The response confirms the roles have been correctly revoked from the user
+for the selected projects.
 
 ```http
 HTTP/1.1 200 Ok
@@ -207,7 +207,7 @@ Content-Type: application/json
 
 ### Reading user roles
 
-It is possible to read the roles of an user using the following call:
+It is possible to read all the roles of a user with the following call:
 
 ```http
 GET /api/v2/users/bar/roles HTTP/1.1
