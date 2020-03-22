@@ -135,6 +135,27 @@ Content-Type: application/json
 ]
 ```
 
+### Removing a user
+
+It is possible to remove a user through the following call:
+
+```http
+DELETE /api/v2/users/bar HTTP/1.1
+Content-Type: application/json
+Api-Key: f9bf78b9a18ce6d46a0cd2b0b86df9da
+```
+
+The response confirms that the user has been removed.
+
+```http
+HTTP/1.1 200 Ok
+Content-Type: application/json
+
+{
+    "message": "Removed user bar"
+}
+```
+
 ## Roles
 
 Roles are used when [security](../security.md) is enabled.

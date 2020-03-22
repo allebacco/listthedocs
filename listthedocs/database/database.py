@@ -8,18 +8,21 @@ from sqlalchemy.exc import IntegrityError
 from ..entities import Project, Version, User, ApiKey, Role, db
 from .exceptions import ApiKeyNotFound, UserNotFound, \
     ProjectNotFound, VersionNotFound, DuplicatedUserName, DuplicatedProjectName, \
-    DuplicatedVersionName
+    DuplicatedVersionName, ForbiddenAction
+
+
+ROOT_USER_NAME = 'root'
 
 
 def init_root_user():
 
-    root_user = User.query.filter_by(name='root').first()
+    root_user = User.query.filter_by(name=ROOT_USER_NAME).first()
     if root_user is not None:
         return
 
     key = current_app.config['ROOT_API_KEY']
 
-    root_user = User(name='root', is_admin=True)
+    root_user = User(name=ROOT_USER_NAME, is_admin=True)
     root_user.api_keys.append(ApiKey(key=key, is_valid=True))
     db.session.add(root_user)
     db.session.commit()
@@ -146,6 +149,19 @@ def add_user(user: User) -> User:
 
 def get_user_by_name(name: str) -> User:
     return User.query.filter_by(name=name).first()
+
+
+def delete_user_by_name(name: str):
+
+    if name == ROOT_USER_NAME:
+        raise ForbiddenAction()
+
+    user = get_user_by_name(name)
+    if user is None:
+        return
+
+    db.session.delete(user)
+    db.session.commit()
 
 
 def get_users() -> User:
