@@ -31,3 +31,7 @@ class DuplicatedVersionName(DatabaseException):
 
 class DuplicatedUserName(DatabaseException):
     pass
+
+
+class ForbiddenAction(DatabaseException):
+    pass

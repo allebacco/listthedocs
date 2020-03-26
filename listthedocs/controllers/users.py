@@ -9,7 +9,7 @@ from ..database import database
 from .utils import json_response, get_json_body, ensure_json_request_fields
 from .security import ensure_admin, fail_if_readonly
 from .errors import handle_http_errors, handle_generic_errors
-from .exceptions import EntityNotFound, EntityConflict, InvalidJSONBody
+from .exceptions import EntityNotFound, EntityConflict, InvalidJSONBody, ForbiddenAction
 
 
 users_apis = Blueprint('users_apis', __name__)
@@ -47,6 +47,18 @@ def get_user_by_name(user_name):
         raise EntityNotFound('user', user_name)
 
     return json_response(200, json=user)
+
+
+@users_apis.route('/api/v2/users/<user_name>', methods=['DELETE'])
+@ensure_admin
+@fail_if_readonly
+def remove_user_by_name(user_name):
+    try:
+        database.delete_user_by_name(user_name)
+    except database.ForbiddenAction:
+        raise ForbiddenAction()
+
+    return json_response(200, json={'message': 'Removed user ' + user_name})
 
 
 @users_apis.route('/api/v2/users', methods=['GET'])
